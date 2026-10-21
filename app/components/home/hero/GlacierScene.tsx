@@ -3,14 +3,35 @@
  * das Eis bricht auf, das orange Signet steigt heraus.
  * Wird nur clientseitig und nur auf Desktop mit ausreichender GPU geladen.
  */
-import {useMemo, useRef, useState, type MutableRefObject} from 'react';
-import {Canvas, useFrame} from '@react-three/fiber';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MutableRefObject,
+} from 'react';
+import {Canvas, useFrame, useThree} from '@react-three/fiber';
 import {Environment, Lightformer, PerformanceMonitor} from '@react-three/drei';
-import {Bloom, EffectComposer, Noise, Vignette} from '@react-three/postprocessing';
+import {
+  Bloom,
+  EffectComposer,
+  Noise,
+  Vignette,
+} from '@react-three/postprocessing';
 import {BlendFunction} from 'postprocessing';
 import * as THREE from 'three';
 import {SIGNET_BASE, SIGNET_PEAK} from '~/components/brand/logo-geometry';
-import {easeInOut, easeOut, fbm, lerp, range, ridged, seeded, smoothstep} from './math';
+import {
+  easeInOut,
+  easeOut,
+  fbm,
+  lerp,
+  range,
+  ridged,
+  seeded,
+  smoothstep,
+} from './math';
 
 type Progress = MutableRefObject<number>;
 
@@ -22,17 +43,33 @@ type SceneProps = {
 
 export default function GlacierScene({progress, active, onReady}: SceneProps) {
   const [dpr, setDpr] = useState(1.5);
+  // Erst rendern, wenn alle Shader kompiliert sind – sonst blockiert die
+  // (unter Windows/D3D sehr langsame) Kompilierung den Main Thread
+  const [compiled, setCompiled] = useState(false);
+  const onCompiled = useCallback(() => setCompiled(true), []);
+
+  useEffect(() => {
+    if (!compiled) return;
+    // zwei Frames: erster Render inkl. Postprocessing, dann Preloader freigeben
+    let id = requestAnimationFrame(() => {
+      id = requestAnimationFrame(() => onReady());
+    });
+    return () => cancelAnimationFrame(id);
+  }, [compiled, onReady]);
 
   return (
     <Canvas
       dpr={dpr}
-      frameloop={active ? 'always' : 'never'}
-      gl={{antialias: false, powerPreference: 'high-performance', stencil: false}}
+      frameloop={active && compiled ? 'always' : 'never'}
+      gl={{
+        antialias: false,
+        powerPreference: 'high-performance',
+        stencil: false,
+      }}
       camera={{fov: 38, near: 0.1, far: 140, position: [0, 2.6, 26]}}
       onCreated={({gl}) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = 0.9;
-        requestAnimationFrame(() => onReady());
       }}
     >
       <PerformanceMonitor
@@ -44,13 +81,40 @@ export default function GlacierScene({progress, active, onReady}: SceneProps) {
 
       <ambientLight intensity={0.12} color="#4a6a8a" />
       <hemisphereLight args={['#7fa6c2', '#05080d', 0.22]} />
-      <directionalLight position={[-9, 11, -14]} intensity={2.6} color="#bfd9e6" />
-      <directionalLight position={[7, 5, 12]} intensity={0.25} color="#7fa3c4" />
+      <directionalLight
+        position={[-9, 11, -14]}
+        intensity={2.6}
+        color="#bfd9e6"
+      />
+      <directionalLight
+        position={[7, 5, 12]}
+        intensity={0.25}
+        color="#7fa3c4"
+      />
 
       <Environment resolution={128} frames={1}>
-        <Lightformer form="rect" intensity={2.2} color="#bfd9e6" position={[0, 6, -8]} scale={[18, 4, 1]} />
-        <Lightformer form="rect" intensity={1.2} color="#e8f4fa" position={[-10, 2, 4]} rotation-y={Math.PI / 2} scale={[10, 3, 1]} />
-        <Lightformer form="circle" intensity={3} color="#ff5a1f" position={[4, 1, 6]} scale={1.6} />
+        <Lightformer
+          form="rect"
+          intensity={2.2}
+          color="#bfd9e6"
+          position={[0, 6, -8]}
+          scale={[18, 4, 1]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={1.2}
+          color="#e8f4fa"
+          position={[-10, 2, 4]}
+          rotation-y={Math.PI / 2}
+          scale={[10, 3, 1]}
+        />
+        <Lightformer
+          form="circle"
+          intensity={3}
+          color="#ff5a1f"
+          position={[4, 1, 6]}
+          scale={1.6}
+        />
       </Environment>
 
       <CameraRig progress={progress} />
@@ -59,12 +123,20 @@ export default function GlacierScene({progress, active, onReady}: SceneProps) {
       <Glow progress={progress} />
       <SignetModel progress={progress} />
       <Snow />
+      <Precompile onDone={onCompiled} />
 
-      <EffectComposer multisampling={0}>
-        <Bloom mipmapBlur intensity={0.85} luminanceThreshold={0.62} luminanceSmoothing={0.25} />
-        <Noise opacity={0.05} blendFunction={BlendFunction.OVERLAY} />
-        <Vignette offset={0.22} darkness={0.78} />
-      </EffectComposer>
+      {compiled ? (
+        <EffectComposer multisampling={0}>
+          <Bloom
+            mipmapBlur
+            intensity={0.85}
+            luminanceThreshold={0.62}
+            luminanceSmoothing={0.25}
+          />
+          <Noise opacity={0.05} blendFunction={BlendFunction.OVERLAY} />
+          <Vignette offset={0.22} darkness={0.78} />
+        </EffectComposer>
+      ) : null}
     </Canvas>
   );
 }
@@ -73,14 +145,40 @@ export default function GlacierScene({progress, active, onReady}: SceneProps) {
 function useSmoothedProgress(progress: Progress) {
   const smoothed = useRef(progress.current);
   useFrame((_, delta) => {
-    smoothed.current = lerp(smoothed.current, progress.current, 1 - Math.exp(-delta * 7));
+    smoothed.current = lerp(
+      smoothed.current,
+      progress.current,
+      1 - Math.exp(-delta * 7),
+    );
   });
   return smoothed;
 }
 
+/**
+ * Kompiliert alle Materialien der Szene asynchron (KHR_parallel_shader_compile),
+ * bevor der erste Frame gerendert wird.
+ */
+function Precompile({onDone}: {onDone: () => void}) {
+  const {gl, scene, camera} = useThree();
+  useEffect(() => {
+    let cancelled = false;
+    gl.compileAsync(scene, camera)
+      .catch(() => {})
+      .then(() => !cancelled && onDone());
+    return () => {
+      cancelled = true;
+    };
+  }, [gl, scene, camera, onDone]);
+  return null;
+}
+
 /* ------------------------------------------------------------------ Kamera */
 
-const CAMERA_KEYS: Array<{p: number; pos: [number, number, number]; look: [number, number, number]}> = [
+const CAMERA_KEYS: Array<{
+  p: number;
+  pos: [number, number, number];
+  look: [number, number, number];
+}> = [
   {p: 0, pos: [0, 3.1, 27], look: [0, 1.4, 0]},
   {p: 0.3, pos: [0.9, 2.2, 13], look: [0, 1.7, 0]},
   {p: 0.55, pos: [-0.2, 1.9, 8.6], look: [0, 1.9, 0]},
@@ -110,7 +208,11 @@ function CameraRig({progress}: {progress: Progress}) {
       lerp(a.pos[1], b.pos[1], t) + pointer.y * 0.18,
       lerp(a.pos[2], b.pos[2], t) * portrait,
     );
-    look.set(lerp(a.look[0], b.look[0], t), lerp(a.look[1], b.look[1], t), lerp(a.look[2], b.look[2], t));
+    look.set(
+      lerp(a.look[0], b.look[0], t),
+      lerp(a.look[1], b.look[1], t),
+      lerp(a.look[2], b.look[2], t),
+    );
     camera.position.lerp(pos, 0.12);
     camera.lookAt(look);
   });
@@ -124,13 +226,14 @@ function terrainHeight(x: number, z: number) {
   const ax = Math.abs(x);
   const tongue = fbm(x * 0.12 + 3, z * 0.12) * 0.7 - 0.35;
   const sides = smoothstep(4.5, 22, ax) * (5 + ridged(x * 0.07, z * 0.07) * 14);
-  const behind = smoothstep(-1.5, -30, z) * (8 + ridged(x * 0.05 + 9, z * 0.05) * 26);
+  const behind =
+    smoothstep(-1.5, -30, z) * (8 + ridged(x * 0.05 + 9, z * 0.05) * 26);
   return tongue + sides + behind;
 }
 
 function Terrain() {
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(120, 110, 180, 165);
+    const geo = new THREE.PlaneGeometry(120, 110, 150, 138);
     geo.rotateX(-Math.PI / 2);
     geo.translate(0, 0, -15);
     const pos = geo.attributes.position;
@@ -145,7 +248,8 @@ function Terrain() {
       const y = terrainHeight(x, z);
       pos.setY(i, y);
       // Fels an steilen Grat-Partien, Schnee oben, Eis auf der Zunge
-      const rockiness = smoothstep(0.55, 0.75, fbm(x * 0.3, z * 0.3 + 7)) * smoothstep(3, 9, y);
+      const rockiness =
+        smoothstep(0.55, 0.75, fbm(x * 0.3, z * 0.3 + 7)) * smoothstep(3, 9, y);
       c.copy(ice).lerp(snow, smoothstep(0.2, 6, y));
       c.lerp(rock, rockiness * 0.85);
       colors.set([c.r, c.g, c.b], i * 3);
@@ -157,7 +261,13 @@ function Terrain() {
 
   return (
     <mesh geometry={geometry} receiveShadow>
-      <meshStandardMaterial vertexColors roughness={0.62} metalness={0.02} flatShading envMapIntensity={0.22} />
+      <meshStandardMaterial
+        vertexColors
+        roughness={0.62}
+        metalness={0.02}
+        flatShading
+        envMapIntensity={0.22}
+      />
     </mesh>
   );
 }
@@ -185,12 +295,19 @@ function buildShards(): Shard[] {
       const edgeY = r === 0 || r === rows;
       const jx = edgeX ? 0 : (rand() - 0.5) * (width / cols) * 0.7;
       const jy = edgeY ? 0 : (rand() - 0.5) * (height / rows) * 0.7;
-      pts[r][c] = new THREE.Vector2((c / cols - 0.5) * width + jx, (r / rows) * height + jy);
+      pts[r][c] = new THREE.Vector2(
+        (c / cols - 0.5) * width + jx,
+        (r / rows) * height + jy,
+      );
     }
   }
 
   const shards: Shard[] = [];
-  const addTriangle = (a: THREE.Vector2, b: THREE.Vector2, c: THREE.Vector2) => {
+  const addTriangle = (
+    a: THREE.Vector2,
+    b: THREE.Vector2,
+    c: THREE.Vector2,
+  ) => {
     const center = a.clone().add(b).add(c).divideScalar(3);
     const shape = new THREE.Shape([a, b, c].map((p) => p.clone().sub(center)));
     const depth = 0.55 + rand() * 0.7;
@@ -202,12 +319,25 @@ function buildShards(): Shard[] {
       bevelSegments: 1,
     });
     geometry.translate(0, 0, -depth / 2);
-    const dist = center.clone().sub(new THREE.Vector2(0, height * 0.45)).length() / (width * 0.6);
+    const dist =
+      center
+        .clone()
+        .sub(new THREE.Vector2(0, height * 0.45))
+        .length() /
+      (width * 0.6);
     shards.push({
       geometry,
       base: new THREE.Vector3(center.x, center.y, (rand() - 0.5) * 0.35),
-      dir: new THREE.Vector3(center.x * 0.55 + (rand() - 0.5), 0.6 + rand() * 1.4, 1.2 + rand() * 2.2),
-      spin: new THREE.Vector3(rand() - 0.5, rand() - 0.5, rand() - 0.5).multiplyScalar(5),
+      dir: new THREE.Vector3(
+        center.x * 0.55 + (rand() - 0.5),
+        0.6 + rand() * 1.4,
+        1.2 + rand() * 2.2,
+      ),
+      spin: new THREE.Vector3(
+        rand() - 0.5,
+        rand() - 0.5,
+        rand() - 0.5,
+      ).multiplyScalar(5),
       delay: Math.min(1, dist) * 0.55 + rand() * 0.12,
     });
   };
@@ -266,7 +396,11 @@ function IceWall({progress}: {progress: Progress}) {
         shard.base.y + shard.dir.y * local * 2.4 - local * local * 7,
         shard.base.z + crack * 0.08 * Math.sin(i) + shard.dir.z * local * 5,
       );
-      mesh.rotation.set(shard.spin.x * local, shard.spin.y * local, shard.spin.z * local + crack * 0.015 * Math.cos(i));
+      mesh.rotation.set(
+        shard.spin.x * local,
+        shard.spin.y * local,
+        shard.spin.z * local + crack * 0.015 * Math.cos(i),
+      );
       mesh.scale.setScalar(gap * (1 - local * 0.35));
       mesh.visible = local < 0.995;
     });
@@ -296,7 +430,14 @@ function radialTexture(inner: string, outer: string) {
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext('2d')!;
-  const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  const g = ctx.createRadialGradient(
+    size / 2,
+    size / 2,
+    0,
+    size / 2,
+    size / 2,
+    size / 2,
+  );
   g.addColorStop(0, inner);
   g.addColorStop(1, outer);
   ctx.fillStyle = g;
@@ -310,7 +451,10 @@ function Glow({progress}: {progress: Progress}) {
   const p = useSmoothedProgress(progress);
   const plane = useRef<THREE.Mesh>(null);
   const light = useRef<THREE.PointLight>(null);
-  const texture = useMemo(() => radialTexture('rgba(255,120,40,1)', 'rgba(255,90,31,0)'), []);
+  const texture = useMemo(
+    () => radialTexture('rgba(255,120,40,1)', 'rgba(255,90,31,0)'),
+    [],
+  );
 
   useFrame(({clock}) => {
     const v = p.current;
@@ -320,7 +464,10 @@ function Glow({progress}: {progress: Progress}) {
       range(v, 0.25, 0.5) * 1.1 -
       range(v, 0.62, 0.95) * 1.25;
     if (plane.current) {
-      (plane.current.material as THREE.MeshBasicMaterial).opacity = Math.max(0, intensity);
+      (plane.current.material as THREE.MeshBasicMaterial).opacity = Math.max(
+        0,
+        intensity,
+      );
       plane.current.scale.setScalar(1 + range(v, 0.3, 0.6) * 0.45);
     }
     if (light.current) light.current.intensity = Math.max(0, intensity) * 55;
@@ -330,9 +477,21 @@ function Glow({progress}: {progress: Progress}) {
     <group position={[0, 2.4, -1.1]}>
       <mesh ref={plane}>
         <planeGeometry args={[9, 7]} />
-        <meshBasicMaterial map={texture} transparent depthWrite={false} toneMapped={false} blending={THREE.AdditiveBlending} />
+        <meshBasicMaterial
+          map={texture}
+          transparent
+          depthWrite={false}
+          toneMapped={false}
+          blending={THREE.AdditiveBlending}
+        />
       </mesh>
-      <pointLight ref={light} color="#ff6a2a" distance={14} decay={2} position={[0, 0, 0.4]} />
+      <pointLight
+        ref={light}
+        color="#ff6a2a"
+        distance={14}
+        decay={2}
+        position={[0, 0, 0.4]}
+      />
     </group>
   );
 }
@@ -341,14 +500,21 @@ function Glow({progress}: {progress: Progress}) {
 
 function signetGeometry() {
   const toShape = (points: ReadonlyArray<readonly [number, number]>) =>
-    new THREE.Shape(points.map(([x, y]) => new THREE.Vector2((x - 487) / 380, -(y - 350) / 380)));
-  const geo = new THREE.ExtrudeGeometry([toShape(SIGNET_PEAK), toShape(SIGNET_BASE)], {
-    depth: 0.22,
-    bevelEnabled: true,
-    bevelThickness: 0.05,
-    bevelSize: 0.035,
-    bevelSegments: 4,
-  });
+    new THREE.Shape(
+      points.map(
+        ([x, y]) => new THREE.Vector2((x - 487) / 380, -(y - 350) / 380),
+      ),
+    );
+  const geo = new THREE.ExtrudeGeometry(
+    [toShape(SIGNET_PEAK), toShape(SIGNET_BASE)],
+    {
+      depth: 0.22,
+      bevelEnabled: true,
+      bevelThickness: 0.05,
+      bevelSize: 0.035,
+      bevelSegments: 4,
+    },
+  );
   geo.center();
   return geo;
 }
@@ -365,11 +531,21 @@ function SignetModel({progress}: {progress: Progress}) {
     const settled = range(v, 0.86, 1);
     const t = clock.elapsedTime;
     if (group.current) {
-      group.current.position.set(0, lerp(1.25, 2.55, rise) + Math.sin(t * 0.9) * 0.04 * settled, lerp(-0.7, 1.1, rise));
-      group.current.rotation.set(lerp(0.55, 0, rise), lerp(-1.25, 0, rise) + Math.sin(t * 0.5) * 0.05 * settled, 0);
-      group.current.scale.setScalar(lerp(0.85, 1, rise));
+      group.current.position.set(
+        0,
+        lerp(1.25, 2.55, rise) + Math.sin(t * 0.9) * 0.04 * settled,
+        lerp(-0.7, 1.1, rise),
+      );
+      group.current.rotation.set(
+        lerp(0.55, 0, rise),
+        lerp(-1.25, 0, rise) + Math.sin(t * 0.5) * 0.05 * settled,
+        0,
+      );
+      group.current.scale.setScalar(lerp(0.9, 1.3, rise));
     }
-    if (material.current) material.current.emissiveIntensity = 0.12 + range(v, 0.3, 0.6) * 0.45 - settled * 0.25;
+    if (material.current)
+      material.current.emissiveIntensity =
+        0.12 + range(v, 0.3, 0.6) * 0.45 - settled * 0.25;
   });
 
   return (
@@ -424,7 +600,12 @@ function Droplets({progress}: {progress: Progress}) {
   return (
     <instancedMesh ref={mesh} args={[undefined, undefined, COUNT]}>
       <icosahedronGeometry args={[1, 1]} />
-      <meshStandardMaterial color="#e8f4fa" roughness={0.05} metalness={0.1} envMapIntensity={2} />
+      <meshStandardMaterial
+        color="#e8f4fa"
+        roughness={0.05}
+        metalness={0.1}
+        envMapIntensity={2}
+      />
     </instancedMesh>
   );
 }
@@ -446,10 +627,14 @@ function Snow() {
     }
     return {positions, speeds};
   }, []);
-  const sprite = useMemo(() => radialTexture('rgba(255,255,255,1)', 'rgba(255,255,255,0)'), []);
+  const sprite = useMemo(
+    () => radialTexture('rgba(255,255,255,1)', 'rgba(255,255,255,0)'),
+    [],
+  );
 
   useFrame(({clock}, delta) => {
-    const attr = points.current?.geometry.attributes.position as THREE.BufferAttribute | undefined;
+    const attr = points.current?.geometry.attributes.position as
+      THREE.BufferAttribute | undefined;
     if (!attr) return;
     const arr = attr.array as Float32Array;
     const t = clock.elapsedTime;

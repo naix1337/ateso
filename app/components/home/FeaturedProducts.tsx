@@ -11,27 +11,39 @@ export function FeaturedProducts({products}: {products: ProductCard[]}) {
   const t = useT().featured;
   const root = useRef<HTMLElement>(null);
 
-  useGsap(root, () => {
-    if (prefersReducedMotion()) return;
-    gsap.from('[data-card]', {
-      opacity: 0,
-      y: 80,
-      duration: 1.1,
-      stagger: 0.1,
-      ease: 'power3.out',
-      scrollTrigger: {trigger: root.current, start: 'top 75%'},
-    });
-  });
+  useGsap(
+    root,
+    () => {
+      if (prefersReducedMotion()) return;
+      gsap.from('[data-card]', {
+        opacity: 0,
+        y: 80,
+        duration: 1.1,
+        stagger: 0.1,
+        ease: 'power3.out',
+        scrollTrigger: {trigger: root.current, start: 'top 75%'},
+      });
+    },
+    [],
+    {defer: true},
+  );
 
   return (
-    <section ref={root} aria-labelledby="featured-title" className="bg-black px-4 py-28 md:px-10 md:py-40">
+    <section
+      ref={root}
+      aria-labelledby="featured-title"
+      className="bg-black px-4 py-28 md:px-10 md:py-40"
+    >
       <div className="mx-auto max-w-[1800px]">
         <div className="mb-12 flex items-end justify-between gap-6 md:mb-16">
           <div>
             <p className="label flex items-center gap-4 text-bone/60">
               <span className="rule-orange" /> {t.eyebrow}
             </p>
-            <h2 id="featured-title" className="display mt-5 text-4xl md:text-6xl">
+            <h2
+              id="featured-title"
+              className="display mt-5 text-4xl md:text-6xl"
+            >
               {t.title}
             </h2>
           </div>
@@ -61,7 +73,11 @@ function Card({product}: {product: ProductCard}) {
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType !== 'mouse' || prefersReducedMotion()) return;
     const r = e.currentTarget.getBoundingClientRect();
-    setTilt({x: ((e.clientY - r.top) / r.height - 0.5) * -10, y: ((e.clientX - r.left) / r.width - 0.5) * 12, hover: true});
+    setTilt({
+      x: ((e.clientY - r.top) / r.height - 0.5) * -10,
+      y: ((e.clientX - r.left) / r.width - 0.5) * 12,
+      hover: true,
+    });
   };
 
   return (
@@ -100,7 +116,14 @@ function Card({product}: {product: ProductCard}) {
             <button
               type="button"
               disabled={!product.merchandiseId || !product.available || busy}
-              onClick={() => product.merchandiseId && submit({intent: 'add', merchandiseId: product.merchandiseId, quantity: 1})}
+              onClick={() =>
+                product.merchandiseId &&
+                submit({
+                  intent: 'add',
+                  merchandiseId: product.merchandiseId,
+                  quantity: 1,
+                })
+              }
               className="label w-full bg-bone py-3 text-[0.65rem] font-semibold text-black transition hover:bg-orange disabled:bg-graphite-2 disabled:text-bone/50"
             >
               {busy ? '…' : data?.cart ? t.added : t.quickAdd}
@@ -112,9 +135,13 @@ function Card({product}: {product: ProductCard}) {
       <div className="mt-4 flex items-start justify-between gap-4">
         <div>
           <h3 className="font-semibold">{product.title}</h3>
-          <p className="label mt-1 text-[0.62rem] text-bone/60">{product.subtitle}</p>
+          <p className="label mt-1 text-[0.62rem] text-bone/60">
+            {product.subtitle}
+          </p>
         </div>
-        <p className="shrink-0 tabular-nums">{formatPrice(product.price.amount, product.price.currencyCode)}</p>
+        <p className="shrink-0 tabular-nums">
+          {formatPrice(product.price.amount, product.price.currencyCode)}
+        </p>
       </div>
     </article>
   );

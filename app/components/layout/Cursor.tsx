@@ -11,7 +11,8 @@ export function Cursor() {
 
   useEffect(() => {
     if (!dot.current || !ring.current) return;
-    if (!window.matchMedia('(pointer: fine)').matches || prefersReducedMotion()) return;
+    if (!window.matchMedia('(pointer: fine)').matches || prefersReducedMotion())
+      return;
 
     const d = dot.current;
     const r = ring.current;
@@ -29,7 +30,11 @@ export function Cursor() {
     };
     const over = (e: PointerEvent) => {
       const active = (e.target as Element | null)?.closest?.(INTERACTIVE);
-      gsap.to(r, {scale: active ? 1.9 : 1, borderColor: active ? '#FF5A1F' : 'rgba(242,239,232,0.5)', duration: 0.35});
+      gsap.to(r, {
+        scale: active ? 1.9 : 1,
+        borderColor: active ? '#FF5A1F' : 'rgba(242,239,232,0.5)',
+        duration: 0.35,
+      });
     };
     const leave = () => gsap.to([d, r], {opacity: 0, duration: 0.3});
 

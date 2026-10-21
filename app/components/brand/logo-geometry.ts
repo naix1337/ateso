@@ -82,7 +82,10 @@ function letterS(x: number) {
 }
 
 function letterO(x: number) {
-  return [rr(x, 0, 300, H, 46) + rr(x + T + 4, T - 4, 300 - 2 * (T + 4), H - 2 * (T - 4), 16)];
+  return [
+    rr(x, 0, 300, H, 46) +
+      rr(x + T + 4, T - 4, 300 - 2 * (T + 4), H - 2 * (T - 4), 16),
+  ];
 }
 
 const GAP = 34;

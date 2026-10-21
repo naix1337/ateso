@@ -1,7 +1,10 @@
 import type {Route} from './+types/impressum';
 import {LegalPage} from '~/components/layout/LegalPage';
 
-export const meta: Route.MetaFunction = () => [{title: 'Impressum | ateso'}, {name: 'robots', content: 'noindex'}];
+export const meta: Route.MetaFunction = () => [
+  {title: 'Impressum | ateso'},
+  {name: 'robots', content: 'noindex'},
+];
 
 export default function Impressum() {
   return (

@@ -1,4 +1,8 @@
-import {WORDMARK_LETTERS, WORDMARK_SKEW, WORDMARK_VIEWBOX} from './logo-geometry';
+import {
+  WORDMARK_LETTERS,
+  WORDMARK_SKEW,
+  WORDMARK_VIEWBOX,
+} from './logo-geometry';
 
 type WordmarkProps = React.SVGProps<SVGSVGElement> & {title?: string};
 
@@ -9,7 +13,11 @@ export function Wordmark({title = 'ateso', ...props}: WordmarkProps) {
       <title>{title}</title>
       <g fill="currentColor" transform={WORDMARK_SKEW}>
         {WORDMARK_LETTERS.map((letter, i) => (
-          <g key={i} data-letter={letter.char} style={{transformBox: 'fill-box', transformOrigin: '50% 100%'}}>
+          <g
+            key={i}
+            data-letter={letter.char}
+            style={{transformBox: 'fill-box', transformOrigin: '50% 100%'}}
+          >
             {letter.paths.map((d, j) => (
               <path key={j} d={d} fillRule="evenodd" />
             ))}

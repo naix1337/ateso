@@ -25,18 +25,29 @@ export function TechDetails() {
   const hotspots = t.hotspots;
   const [active, setActive] = useState(-1);
 
-  useGsap(root, () => {
-    ScrollTrigger.create({
-      trigger: root.current,
-      start: 'top top',
-      end: 'bottom bottom',
-      onUpdate: (self) => {
-        // kurzer Vorlauf mit der Übersicht, dann je Hotspot ein gleich langer Abschnitt
-        const idx = self.progress < 0.08 ? -1 : Math.min(hotspots.length - 1, Math.floor(((self.progress - 0.08) / 0.92) * hotspots.length));
-        setActive((prev) => (prev === idx ? prev : idx));
-      },
-    });
-  });
+  useGsap(
+    root,
+    () => {
+      ScrollTrigger.create({
+        trigger: root.current,
+        start: 'top top',
+        end: 'bottom bottom',
+        onUpdate: (self) => {
+          // kurzer Vorlauf mit der Übersicht, dann je Hotspot ein gleich langer Abschnitt
+          const idx =
+            self.progress < 0.08
+              ? -1
+              : Math.min(
+                  hotspots.length - 1,
+                  Math.floor(((self.progress - 0.08) / 0.92) * hotspots.length),
+                );
+          setActive((prev) => (prev === idx ? prev : idx));
+        },
+      });
+    },
+    [],
+    {defer: true},
+  );
 
   const focus = active >= 0 ? HOTSPOT_POS[hotspots[active].id] : null;
   const viewTransform = focus
@@ -44,13 +55,27 @@ export function TechDetails() {
     : 'scale(1) translate(0, 0)';
 
   return (
-    <section ref={root} id="technologie" aria-labelledby="tech-title" className="relative bg-black" style={{height: `${hotspots.length * 60 + 110}vh`}}>
+    <section
+      ref={root}
+      id="technologie"
+      aria-labelledby="tech-title"
+      className="relative bg-black"
+      style={{height: `${hotspots.length * 60 + 110}vh`}}
+    >
       <div className="sticky top-0 flex h-svh items-center overflow-hidden">
         <div className="mx-auto grid w-full max-w-[1800px] items-center gap-8 px-4 md:grid-cols-[1.1fr_1fr] md:gap-16 md:px-10">
           {/* Viewer */}
           <div className="relative mx-auto aspect-[520/544] w-full max-w-[min(560px,48svh)] overflow-hidden bg-graphite-1 md:max-w-[min(620px,74svh)]">
-            <div className="absolute inset-0 transition-transform duration-[1400ms] ease-out-expo" style={{transform: viewTransform, transformOrigin: '50% 50%'}}>
-              <Picture src="/assets/img/variant-aurora" alt="" className="h-full w-full object-cover" loading="lazy" />
+            <div
+              className="absolute inset-0 transition-transform duration-[1400ms] ease-out-expo"
+              style={{transform: viewTransform, transformOrigin: '50% 50%'}}
+            >
+              <Picture
+                src="/assets/img/variant-aurora"
+                alt=""
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
               {hotspots.map((h, i) => {
                 const [x, y] = HOTSPOT_POS[h.id];
                 return (
@@ -58,10 +83,18 @@ export function TechDetails() {
                     key={h.id}
                     aria-hidden="true"
                     className="absolute grid h-6 w-6 place-items-center"
-                    style={{left: `${x}%`, top: `${y}%`, transform: `translate(-50%,-50%) scale(${focus ? 1 / ZOOM : 1})`}}
+                    style={{
+                      left: `${x}%`,
+                      top: `${y}%`,
+                      transform: `translate(-50%,-50%) scale(${focus ? 1 / ZOOM : 1})`,
+                    }}
                   >
-                    <span className={`absolute inset-0 rounded-full border ${i === active ? 'animate-ping border-orange' : 'border-bone/40'}`} />
-                    <span className={`h-2 w-2 rounded-full ${i === active ? 'bg-orange' : 'bg-bone/70'}`} />
+                    <span
+                      className={`absolute inset-0 rounded-full border ${i === active ? 'animate-ping border-orange' : 'border-bone/40'}`}
+                    />
+                    <span
+                      className={`h-2 w-2 rounded-full ${i === active ? 'bg-orange' : 'bg-bone/70'}`}
+                    />
                   </span>
                 );
               })}
@@ -76,7 +109,12 @@ export function TechDetails() {
                   key={h.id}
                   aria-hidden={!shown}
                   className="absolute inset-0 transition-[clip-path] duration-[1100ms] ease-out-expo"
-                  style={{clipPath: shown ? `circle(150% at ${x}% ${y}%)` : `circle(0% at ${x}% ${y}%)`, transitionDelay: shown ? '350ms' : '0ms'}}
+                  style={{
+                    clipPath: shown
+                      ? `circle(150% at ${x}% ${y}%)`
+                      : `circle(0% at ${x}% ${y}%)`,
+                    transitionDelay: shown ? '350ms' : '0ms',
+                  }}
                 >
                   <Picture
                     src={`/assets/img/detail-${h.id}`}
@@ -91,7 +129,11 @@ export function TechDetails() {
 
             {/* Technisches Label im Viewer */}
             <div className="pointer-events-none absolute inset-x-4 bottom-4 flex items-end justify-between">
-              <span className="label text-[0.6rem] text-bone/70">{active >= 0 ? `${String(active + 1).padStart(2, '0')} / ${hotspots[active].label}` : 'Aurora · All Black'}</span>
+              <span className="label text-[0.6rem] text-bone/70">
+                {active >= 0
+                  ? `${String(active + 1).padStart(2, '0')} / ${hotspots[active].label}`
+                  : 'Aurora · All Black'}
+              </span>
               <span className="label text-[0.6rem] text-orange">ateso</span>
             </div>
           </div>
@@ -107,13 +149,21 @@ export function TechDetails() {
             <ol className="mt-8 border-t border-white/10 md:mt-12">
               {hotspots.map((h, i) => (
                 <li key={h.id} className="border-b border-white/10">
-                  <div className={`grid grid-cols-[3rem_1fr] gap-x-2 py-3 transition-colors duration-500 md:py-4 ${i === active ? 'text-bone' : 'text-bone/40'}`}>
-                    <span className="label pt-1 tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+                  <div
+                    className={`grid grid-cols-[3rem_1fr] gap-x-2 py-3 transition-colors duration-500 md:py-4 ${i === active ? 'text-bone' : 'text-bone/60'}`}
+                  >
+                    <span className="label pt-1 tabular-nums">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
                     <div>
                       <p className="label">{h.label}</p>
-                      <div className={`grid transition-[grid-template-rows] duration-700 ease-out-expo ${i === active ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                      <div
+                        className={`grid transition-[grid-template-rows] duration-700 ease-out-expo ${i === active ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+                      >
                         <div className="overflow-hidden">
-                          <p className="mt-3 text-xl font-semibold md:text-2xl">{h.title}</p>
+                          <p className="mt-3 text-xl font-semibold md:text-2xl">
+                            {h.title}
+                          </p>
                           <p className="mt-1 max-w-md text-bone/70">{h.text}</p>
                         </div>
                       </div>

@@ -8,6 +8,7 @@ import {
   Meta,
   Scripts,
   ScrollRestoration,
+  useMatches,
   useRouteLoaderData,
 } from 'react-router';
 import type {Route} from './+types/root';
@@ -31,7 +32,11 @@ export type RootLoader = typeof loader;
  * Root-Daten nur nach Mutationen (z. B. Warenkorb) oder manueller
  * Revalidierung neu laden.
  */
-export const shouldRevalidate: ShouldRevalidateFunction = ({formMethod, currentUrl, nextUrl}) => {
+export const shouldRevalidate: ShouldRevalidateFunction = ({
+  formMethod,
+  currentUrl,
+  nextUrl,
+}) => {
   if (formMethod && formMethod !== 'GET') return true;
   if (currentUrl.toString() === nextUrl.toString()) return true;
   return false;
@@ -57,7 +62,10 @@ export async function loader({context}: Route.LoaderArgs) {
       ? null
       : {
           cart: cart.get(),
-          shop: getShopAnalytics({storefront, publicStorefrontId: env.PUBLIC_STOREFRONT_ID}),
+          shop: getShopAnalytics({
+            storefront,
+            publicStorefrontId: env.PUBLIC_STOREFRONT_ID,
+          }),
           consent: {
             checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
             storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
@@ -71,6 +79,8 @@ export async function loader({context}: Route.LoaderArgs) {
 
 export function Layout({children}: {children?: React.ReactNode}) {
   const nonce = useNonce();
+  // Skeleton-Styles (Shop-Seiten) braucht die Startseite nicht – spart einen render-blockierenden Request
+  const isHome = useMatches().some((match) => match.id === 'routes/_index');
 
   return (
     <html lang="de">
@@ -79,7 +89,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <meta name="theme-color" content="#0A0A0A" />
         <link rel="stylesheet" href={tailwindCss}></link>
-        <link rel="stylesheet" href={appStyles}></link>
+        {isHome ? null : <link rel="stylesheet" href={appStyles}></link>}
         <Meta />
         <Links />
       </head>
@@ -124,7 +134,11 @@ export default function App() {
   if (!data.analytics) return page;
 
   return (
-    <Analytics.Provider cart={data.analytics.cart} shop={data.analytics.shop} consent={data.analytics.consent}>
+    <Analytics.Provider
+      cart={data.analytics.cart}
+      shop={data.analytics.shop}
+      consent={data.analytics.consent}
+    >
       {page}
     </Analytics.Provider>
   );
@@ -147,8 +161,15 @@ export function ErrorBoundary() {
       <div className="text-center">
         <p className="label text-orange">Fehler {errorStatus}</p>
         <h1 className="display mt-4 text-5xl">Falscher Grat.</h1>
-        {errorMessage ? <pre className="mt-6 text-sm whitespace-pre-wrap text-bone/60">{errorMessage}</pre> : null}
-        <a href="/" className="label mt-8 inline-block border-b border-orange pb-1">
+        {errorMessage ? (
+          <pre className="mt-6 text-sm whitespace-pre-wrap text-bone/60">
+            {errorMessage}
+          </pre>
+        ) : null}
+        <a
+          href="/"
+          className="label mt-8 inline-block border-b border-orange pb-1"
+        >
           Zur Startseite
         </a>
       </div>

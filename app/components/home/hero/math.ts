@@ -3,11 +3,13 @@
 export const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 /** Fortschritt von p innerhalb [a, b] als 0..1. */
-export const range = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
+export const range = (p: number, a: number, b: number) =>
+  clamp01((p - a) / (b - a));
 
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-export const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+export const easeInOut = (t: number) =>
+  t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 export const easeOut = (t: number) => 1 - (1 - t) ** 3;
 export const smoothstep = (a: number, b: number, v: number) => {
   const t = clamp01((v - a) / (b - a));

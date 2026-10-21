@@ -1,4 +1,11 @@
-import {createContext, useCallback, useContext, useEffect, useRef, useState} from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {useFetcher, useRouteLoaderData} from 'react-router';
 import type {MiniCart} from '~/lib/cart.server';
 import type {RootLoader} from '~/root';
@@ -9,7 +16,11 @@ const CartUIContext = createContext<CartUI>({open: false, setOpen: () => {}});
 
 export function CartUIProvider({children}: {children: React.ReactNode}) {
   const [open, setOpen] = useState(false);
-  return <CartUIContext.Provider value={{open, setOpen}}>{children}</CartUIContext.Provider>;
+  return (
+    <CartUIContext.Provider value={{open, setOpen}}>
+      {children}
+    </CartUIContext.Provider>
+  );
 }
 
 export const useCartUI = () => useContext(CartUIContext);
@@ -31,7 +42,11 @@ export function useCartAction(key?: string) {
   const lastIntent = useRef<string | null>(null);
 
   useEffect(() => {
-    if (fetcher.state === 'idle' && fetcher.data?.cart && lastIntent.current === 'add') {
+    if (
+      fetcher.state === 'idle' &&
+      fetcher.data?.cart &&
+      lastIntent.current === 'add'
+    ) {
       lastIntent.current = null;
       setOpen(true);
     }
@@ -41,7 +56,9 @@ export function useCartAction(key?: string) {
     (fields: Record<string, string | number>) => {
       lastIntent.current = String(fields.intent);
       fetcher.submit(
-        Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, String(v)])),
+        Object.fromEntries(
+          Object.entries(fields).map(([k, v]) => [k, String(v)]),
+        ),
         {method: 'post', action: '/api/cart'},
       );
     },

@@ -22,12 +22,18 @@ export function Newsletter() {
   };
 
   return (
-    <section aria-labelledby="newsletter-title" className="relative overflow-hidden bg-orange px-4 py-24 text-black md:px-10 md:py-36">
+    <section
+      aria-labelledby="newsletter-title"
+      className="relative overflow-hidden bg-orange px-4 py-24 text-black md:px-10 md:py-36"
+    >
       <Signet className="pointer-events-none absolute -right-[10vw] -bottom-[12vw] w-[60vw] max-w-[900px] text-black/[0.07]" />
       <div className="relative mx-auto grid max-w-[1800px] gap-12 md:grid-cols-2 md:items-end">
         <div>
-          <p className="label text-black/70">{t.eyebrow}</p>
-          <h2 id="newsletter-title" className="display mt-5 text-5xl md:text-8xl">
+          <p className="label text-black">{t.eyebrow}</p>
+          <h2
+            id="newsletter-title"
+            className="display mt-5 text-5xl md:text-8xl"
+          >
             {t.title}
           </h2>
           <p className="mt-6 max-w-md text-lg text-black/75">{t.text}</p>
@@ -57,8 +63,16 @@ export function Newsletter() {
               {t.submit}
             </button>
           </div>
-          <p id="newsletter-status" role="status" className="mt-4 min-h-6 text-sm font-medium">
-            {state === 'invalid' ? t.invalid : state === 'success' ? t.success : ''}
+          <p
+            id="newsletter-status"
+            role="status"
+            className="mt-4 min-h-6 text-sm font-medium"
+          >
+            {state === 'invalid'
+              ? t.invalid
+              : state === 'success'
+                ? t.success
+                : ''}
           </p>
         </form>
       </div>

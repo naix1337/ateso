@@ -24,7 +24,9 @@ export function SmoothScroll({children}: {children: React.ReactNode}) {
     };
   }, []);
 
-  return <LenisContext.Provider value={lenis}>{children}</LenisContext.Provider>;
+  return (
+    <LenisContext.Provider value={lenis}>{children}</LenisContext.Provider>
+  );
 }
 
 export function useLenis() {

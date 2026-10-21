@@ -4,10 +4,18 @@ import {prefersReducedMotion} from '~/components/motion/useReducedMotion';
 import {useT} from '~/i18n';
 import {fbm, ridged} from './hero/math';
 
-function mountainPath(seed: number, base: number, amplitude: number, roughness: number) {
+function mountainPath(
+  seed: number,
+  base: number,
+  amplitude: number,
+  roughness: number,
+) {
   const pts: string[] = [];
   for (let x = 0; x <= 200; x += 2) {
-    const y = base - ridged(x * roughness + seed, seed * 1.7) * amplitude - fbm(x * 0.05, seed) * amplitude * 0.3;
+    const y =
+      base -
+      ridged(x * roughness + seed, seed * 1.7) * amplitude -
+      fbm(x * 0.05, seed) * amplitude * 0.3;
     pts.push(`${x},${y.toFixed(1)}`);
   }
   return `M0,120 L${pts.join(' L')} L200,120 Z`;
@@ -28,42 +36,61 @@ export function Manifest() {
     [],
   );
 
-  useGsap(root, () => {
-    if (prefersReducedMotion()) return;
+  useGsap(
+    root,
+    () => {
+      if (prefersReducedMotion()) return;
 
-    gsap.utils.toArray<HTMLElement>('[data-word]').forEach((word) => {
-      gsap.fromTo(
-        word.querySelectorAll('[data-char]'),
-        {yPercent: 110, rotate: 6},
-        {
-          yPercent: 0,
-          rotate: 0,
-          stagger: 0.025,
-          ease: 'power3.out',
-          scrollTrigger: {trigger: word, start: 'top 88%', end: 'top 50%', scrub: 0.8},
-        },
-      );
-    });
-
-    gsap.utils.toArray<SVGElement>('[data-mountain]').forEach((layer) => {
-      gsap.to(layer, {
-        yPercent: Number(layer.dataset.speed),
-        ease: 'none',
-        scrollTrigger: {trigger: root.current, start: 'top bottom', end: 'bottom top', scrub: true},
+      gsap.utils.toArray<HTMLElement>('[data-word]').forEach((word) => {
+        gsap.fromTo(
+          word.querySelectorAll('[data-char]'),
+          {yPercent: 110, rotate: 6},
+          {
+            yPercent: 0,
+            rotate: 0,
+            stagger: 0.025,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: word,
+              start: 'top 88%',
+              end: 'top 50%',
+              scrub: 0.8,
+            },
+          },
+        );
       });
-    });
 
-    gsap.from('[data-manifest-body]', {
-      opacity: 0,
-      y: 40,
-      duration: 1.2,
-      ease: 'power3.out',
-      scrollTrigger: {trigger: '[data-manifest-body]', start: 'top 85%'},
-    });
-  });
+      gsap.utils.toArray<SVGElement>('[data-mountain]').forEach((layer) => {
+        gsap.to(layer, {
+          yPercent: Number(layer.dataset.speed),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: root.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      });
+
+      gsap.from('[data-manifest-body]', {
+        opacity: 0,
+        y: 40,
+        duration: 1.2,
+        ease: 'power3.out',
+        scrollTrigger: {trigger: '[data-manifest-body]', start: 'top 85%'},
+      });
+    },
+    [],
+    {defer: true},
+  );
 
   return (
-    <section ref={root} id="manifest" className="relative overflow-hidden bg-black pt-40 pb-[45vh] md:pt-56">
+    <section
+      ref={root}
+      id="manifest"
+      className="relative overflow-hidden bg-black pt-40 pb-[45vh] md:pt-56"
+    >
       <div className="relative z-10 mx-auto max-w-[1800px] px-4 md:px-10">
         <p className="label mb-10 flex items-center gap-4 text-bone/60">
           <span className="rule-orange" /> {t.eyebrow}
@@ -72,14 +99,23 @@ export function Manifest() {
         <h2 className="display text-[17vw] md:text-[12vw]">
           {t.words.map((word, i) => (
             <span key={word} className="block">
-              <span data-word aria-label={word} className={`inline-flex overflow-hidden pb-[0.08em] ${i === 1 ? 'md:ml-[12vw]' : i === 2 ? 'md:ml-[24vw]' : ''}`}>
+              <span className="sr-only">{word}</span>
+              <span
+                data-word
+                aria-hidden="true"
+                className={`inline-flex overflow-hidden pb-[0.08em] ${i === 1 ? 'md:ml-[12vw]' : i === 2 ? 'md:ml-[24vw]' : ''}`}
+              >
                 {word.split('').map((char, j) => (
-                  <span key={j} data-char aria-hidden="true" className="inline-block will-change-transform">
+                  <span
+                    key={j}
+                    data-char
+                    className="inline-block will-change-transform"
+                  >
                     {char}
                   </span>
                 ))}
                 {i < t.words.length - 1 ? (
-                  <span data-char aria-hidden="true" className="inline-block text-orange">
+                  <span data-char className="inline-block text-orange">
                     ·
                   </span>
                 ) : null}
@@ -88,12 +124,18 @@ export function Manifest() {
           ))}
         </h2>
 
-        <p data-manifest-body className="mt-16 max-w-xl text-lg leading-relaxed text-bone/70 md:mt-24 md:ml-[24vw] md:text-xl">
+        <p
+          data-manifest-body
+          className="mt-16 max-w-xl text-lg leading-relaxed text-bone/70 md:mt-24 md:ml-[24vw] md:text-xl"
+        >
           {t.body}
         </p>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[70vh]" aria-hidden="true">
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[70vh]"
+        aria-hidden="true"
+      >
         {layers.map((layer, i) => (
           <svg
             key={i}

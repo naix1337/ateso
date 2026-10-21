@@ -1,4 +1,9 @@
-import {SIGNET_BASE, SIGNET_PEAK, SIGNET_VIEWBOX, pointsToPath} from './logo-geometry';
+import {
+  SIGNET_BASE,
+  SIGNET_PEAK,
+  SIGNET_VIEWBOX,
+  pointsToPath,
+} from './logo-geometry';
 
 type SignetProps = React.SVGProps<SVGSVGElement> & {title?: string};
 
@@ -12,7 +17,12 @@ export function Signet({title, ...props}: SignetProps) {
       {...props}
     >
       {title ? <title>{title}</title> : null}
-      <g fill="currentColor" stroke="currentColor" strokeWidth={10} strokeLinejoin="round">
+      <g
+        fill="currentColor"
+        stroke="currentColor"
+        strokeWidth={10}
+        strokeLinejoin="round"
+      >
         <path data-part="peak" d={pointsToPath(SIGNET_PEAK)} />
         <path data-part="base" d={pointsToPath(SIGNET_BASE)} />
       </g>

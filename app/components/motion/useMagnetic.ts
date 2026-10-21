@@ -3,10 +3,18 @@ import {gsap} from '~/lib/gsap';
 import {prefersReducedMotion} from './useReducedMotion';
 
 /** Element folgt dem Zeiger leicht („magnetisch“), nur bei feinem Pointer. */
-export function useMagnetic(ref: RefObject<HTMLElement | null>, strength = 0.35) {
+export function useMagnetic(
+  ref: RefObject<HTMLElement | null>,
+  strength = 0.35,
+) {
   useEffect(() => {
     const el = ref.current;
-    if (!el || prefersReducedMotion() || !window.matchMedia('(pointer: fine)').matches) return;
+    if (
+      !el ||
+      prefersReducedMotion() ||
+      !window.matchMedia('(pointer: fine)').matches
+    )
+      return;
 
     const xTo = gsap.quickTo(el, 'x', {duration: 0.6, ease: 'power3.out'});
     const yTo = gsap.quickTo(el, 'y', {duration: 0.6, ease: 'power3.out'});

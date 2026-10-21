@@ -1,6 +1,11 @@
 import {useEffect, useRef, useState} from 'react';
 import {gsap} from '~/lib/gsap';
-import {SIGNET_BASE, SIGNET_PEAK, SIGNET_VIEWBOX, pointsToPath} from '~/components/brand/logo-geometry';
+import {
+  SIGNET_BASE,
+  SIGNET_PEAK,
+  SIGNET_VIEWBOX,
+  pointsToPath,
+} from '~/components/brand/logo-geometry';
 import {useLenis} from '~/components/motion/SmoothScroll';
 import {prefersReducedMotion} from '~/components/motion/useReducedMotion';
 import {useT} from '~/i18n';
@@ -43,12 +48,29 @@ export function Preloader({ready}: {ready: boolean}) {
     if (!root.current) return;
     const ctx = gsap.context(() => {
       const render = () => {
-        if (counter.current) counter.current.textContent = String(Math.round(value.current.v)).padStart(2, '0');
+        if (counter.current)
+          counter.current.textContent = String(
+            Math.round(value.current.v),
+          ).padStart(2, '0');
       };
       intro.current = gsap
         .timeline()
-        .fromTo('[data-stroke]', {strokeDashoffset: 1}, {strokeDashoffset: 0, duration: 1.4, ease: 'power2.inOut', stagger: 0.15}, 0)
-        .to(value.current, {v: 80, duration: 1.4, ease: 'power1.out', onUpdate: render}, 0);
+        .fromTo(
+          '[data-stroke]',
+          {strokeDashoffset: 1},
+          {
+            strokeDashoffset: 0,
+            duration: 1.4,
+            ease: 'power2.inOut',
+            stagger: 0.15,
+          },
+          0,
+        )
+        .to(
+          value.current,
+          {v: 80, duration: 1.4, ease: 'power1.out', onUpdate: render},
+          0,
+        );
     }, root);
     return () => ctx.revert();
   }, []);
@@ -60,10 +82,18 @@ export function Preloader({ready}: {ready: boolean}) {
     const reduced = prefersReducedMotion();
     const ctx = gsap.context(() => {
       const render = () => {
-        if (counter.current) counter.current.textContent = String(Math.round(value.current.v)).padStart(2, '0');
+        if (counter.current)
+          counter.current.textContent = String(
+            Math.round(value.current.v),
+          ).padStart(2, '0');
       };
       const exit = gsap.timeline({
-        delay: reduced ? 0 : Math.max(0, (intro.current?.duration() ?? 0) - (intro.current?.time() ?? 0)),
+        delay: reduced
+          ? 0
+          : Math.max(
+              0,
+              (intro.current?.duration() ?? 0) - (intro.current?.time() ?? 0),
+            ),
         onComplete: () => {
           window.scrollTo(0, 0);
           setDone(true);
@@ -74,10 +104,26 @@ export function Preloader({ready}: {ready: boolean}) {
         return;
       }
       exit
-        .to(value.current, {v: 100, duration: 0.5, ease: 'power2.out', onUpdate: render}, 0)
-        .to('[data-fill]', {fillOpacity: 1, duration: 0.5, ease: 'power2.out'}, 0.1)
-        .to('[data-signet-wrap]', {scale: 0.9, duration: 0.4, ease: 'power2.in'}, 0.6)
-        .to(root.current, {clipPath: 'inset(0% 0% 100% 0%)', duration: 0.9, ease: 'expo.inOut'}, 0.75);
+        .to(
+          value.current,
+          {v: 100, duration: 0.5, ease: 'power2.out', onUpdate: render},
+          0,
+        )
+        .to(
+          '[data-fill]',
+          {fillOpacity: 1, duration: 0.5, ease: 'power2.out'},
+          0.1,
+        )
+        .to(
+          '[data-signet-wrap]',
+          {scale: 0.9, duration: 0.4, ease: 'power2.in'},
+          0.6,
+        )
+        .to(
+          root.current,
+          {clipPath: 'inset(0% 0% 100% 0%)', duration: 0.9, ease: 'expo.inOut'},
+          0.75,
+        );
     }, root);
     // kein revert: der Preloader wird nach dem Exit ausgehängt
     void ctx;
@@ -95,7 +141,11 @@ export function Preloader({ready}: {ready: boolean}) {
       style={{clipPath: 'inset(0% 0% 0% 0%)'}}
     >
       <div data-signet-wrap className="w-28 md:w-36">
-        <svg viewBox={SIGNET_VIEWBOX} className="h-auto w-full overflow-visible" aria-hidden="true">
+        <svg
+          viewBox={SIGNET_VIEWBOX}
+          className="h-auto w-full overflow-visible"
+          aria-hidden="true"
+        >
           {[SIGNET_PEAK, SIGNET_BASE].map((points, i) => (
             <path
               key={i}
@@ -115,7 +165,10 @@ export function Preloader({ready}: {ready: boolean}) {
         </svg>
       </div>
       <p className="label mt-10 flex items-baseline gap-3 text-bone/60">
-        <span ref={counter} className="w-8 text-right font-semibold text-bone tabular-nums">
+        <span
+          ref={counter}
+          className="w-8 text-right font-semibold text-bone tabular-nums"
+        >
           00
         </span>
         <span>%</span>

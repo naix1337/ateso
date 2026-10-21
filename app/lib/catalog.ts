@@ -5,7 +5,12 @@
  */
 import type {RouterContextProvider} from 'react-router';
 import {MOCK_COLLECTION, MOCK_FEATURED} from './mock/catalog';
-import {VARIANT_META, type CollectionData, type Money, type ProductCard} from './catalog-data';
+import {
+  VARIANT_META,
+  type CollectionData,
+  type Money,
+  type ProductCard,
+} from './catalog-data';
 
 export * from './catalog-data';
 
@@ -22,10 +27,13 @@ export async function getHomeCatalog(
     return {collection: MOCK_COLLECTION, featured: MOCK_FEATURED};
   }
 
-  const {product, products} = await context.storefront.query(HOME_CATALOG_QUERY, {
-    variables: {handle: COLLECTION_HANDLE},
-    cache: context.storefront.CacheShort(),
-  });
+  const {product, products} = await context.storefront.query(
+    HOME_CATALOG_QUERY,
+    {
+      variables: {handle: COLLECTION_HANDLE},
+      cache: context.storefront.CacheShort(),
+    },
+  );
 
   return {
     collection: mapCollection(product ?? null),
@@ -51,7 +59,11 @@ function mapCollection(product: LiveProduct): CollectionData {
   if (!product) {
     return {
       ...MOCK_COLLECTION,
-      variants: MOCK_COLLECTION.variants.map((v) => ({...v, merchandiseId: null, available: false})),
+      variants: MOCK_COLLECTION.variants.map((v) => ({
+        ...v,
+        merchandiseId: null,
+        available: false,
+      })),
     };
   }
   return {
@@ -59,7 +71,9 @@ function mapCollection(product: LiveProduct): CollectionData {
     handle: product.handle,
     variants: VARIANT_META.map((meta) => {
       const live = product.variants.nodes.find((node) =>
-        node.selectedOptions.some((o) => o.value.toLowerCase() === meta.name.toLowerCase()),
+        node.selectedOptions.some(
+          (o) => o.value.toLowerCase() === meta.name.toLowerCase(),
+        ),
       );
       return {
         ...meta,
@@ -77,7 +91,9 @@ type LiveCardProduct = {
   title: string;
   productType: string;
   images: {nodes: Array<{url: string}>};
-  variants: {nodes: Array<{id: string; availableForSale: boolean; price: Money}>};
+  variants: {
+    nodes: Array<{id: string; availableForSale: boolean; price: Money}>;
+  };
 };
 
 function mapProductCard(product: LiveCardProduct): ProductCard {

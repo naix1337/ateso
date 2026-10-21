@@ -16,16 +16,24 @@ export function SiteFooter({mock}: {mock: boolean}) {
         </div>
         {t.columns.map((col) => (
           <div key={col.title}>
-            <p className="label mb-5 text-bone/40">{col.title}</p>
+            <p className="label mb-5 text-bone/60">{col.title}</p>
             <ul className="space-y-3">
               {col.links.map((link) => (
                 <li key={link.label}>
                   {link.to.startsWith('http') ? (
-                    <a href={link.to} target="_blank" rel="noreferrer" className="text-bone/80 transition-colors hover:text-orange">
+                    <a
+                      href={link.to}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-bone/80 transition-colors hover:text-orange"
+                    >
                       {link.label}
                     </a>
                   ) : (
-                    <Link to={link.to} className="text-bone/80 transition-colors hover:text-orange">
+                    <Link
+                      to={link.to}
+                      className="text-bone/80 transition-colors hover:text-orange"
+                    >
                       {link.label}
                     </Link>
                   )}
@@ -36,13 +44,22 @@ export function SiteFooter({mock}: {mock: boolean}) {
         ))}
       </div>
 
-      <Wordmark className="mx-auto mt-24 block h-auto w-full max-w-[1800px] text-bone/[0.06]" aria-hidden="true" />
+      <Wordmark
+        className="mx-auto mt-24 block h-auto w-full max-w-[1800px] text-bone/[0.06]"
+        aria-hidden="true"
+      />
 
       <div className="mx-auto mt-6 flex max-w-[1800px] flex-col justify-between gap-2 text-xs text-bone/50 sm:flex-row">
         <p>
           © {year} ateso. {t.rights}
         </p>
-        {mock ? <p className="label text-[0.6rem] text-orange/80">Demo-Modus · Testdaten</p> : <p>ateso.store</p>}
+        {mock ? (
+          <p className="label text-[0.6rem] text-orange">
+            Demo-Modus · Testdaten
+          </p>
+        ) : (
+          <p>ateso.store</p>
+        )}
       </div>
     </footer>
   );

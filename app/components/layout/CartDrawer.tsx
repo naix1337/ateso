@@ -54,9 +54,16 @@ export function CartDrawer() {
           >
             <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
               <p className="label text-bone">
-                {t.title} <span className="text-orange">({cart?.totalQuantity ?? 0})</span>
+                {t.title}{' '}
+                <span className="text-orange">
+                  ({cart?.totalQuantity ?? 0})
+                </span>
               </p>
-              <button type="button" className="label text-bone/70 hover:text-orange" onClick={() => setOpen(false)}>
+              <button
+                type="button"
+                className="label text-bone/70 hover:text-orange"
+                onClick={() => setOpen(false)}
+              >
                 {t.close}
               </button>
             </div>
@@ -77,7 +84,10 @@ export function CartDrawer() {
               <div className="mb-4 flex items-baseline justify-between">
                 <span className="label text-bone/60">{t.subtotal}</span>
                 <span className="text-lg font-semibold">
-                  {formatPrice(cart?.subtotal.amount ?? 0, cart?.subtotal.currencyCode)}
+                  {formatPrice(
+                    cart?.subtotal.amount ?? 0,
+                    cart?.subtotal.currencyCode,
+                  )}
                 </span>
               </div>
               {cart?.checkoutUrl ? (
@@ -96,7 +106,11 @@ export function CartDrawer() {
                   >
                     {t.checkout}
                   </button>
-                  {cart?.mock ? <p className="mt-3 text-center text-xs text-bone/60">{t.mockCheckout}</p> : null}
+                  {cart?.mock ? (
+                    <p className="mt-3 text-center text-xs text-bone/60">
+                      {t.mockCheckout}
+                    </p>
+                  ) : null}
                 </>
               )}
             </div>
@@ -110,27 +124,51 @@ export function CartDrawer() {
 function CartLine({line}: {line: MiniCartLine}) {
   const t = useT().cart;
   const {submit, busy} = useCartAction(`line-${line.id}`);
-  const update = (quantity: number) => submit({intent: 'update', lineId: line.id, quantity});
+  const update = (quantity: number) =>
+    submit({intent: 'update', lineId: line.id, quantity});
 
   return (
-    <li className={`flex gap-4 py-4 transition-opacity ${busy ? 'opacity-50' : ''}`}>
+    <li
+      className={`flex gap-4 py-4 transition-opacity ${busy ? 'opacity-50' : ''}`}
+    >
       <div className="h-24 w-20 shrink-0 overflow-hidden bg-graphite-2">
-        {line.image ? <img src={line.image} alt="" className="h-full w-full object-cover" loading="lazy" /> : null}
+        {line.image ? (
+          <img
+            src={line.image}
+            alt=""
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+        ) : null}
       </div>
       <div className="flex flex-1 flex-col">
         <p className="font-semibold">{line.title}</p>
         <p className="label mt-1 text-bone/60">{line.variantTitle}</p>
         <div className="mt-auto flex items-center justify-between">
           <div className="flex items-center border border-white/15">
-            <button type="button" aria-label={t.decrease} className="h-8 w-8 hover:text-orange" onClick={() => update(line.quantity - 1)}>
+            <button
+              type="button"
+              aria-label={t.decrease}
+              className="h-8 w-8 hover:text-orange"
+              onClick={() => update(line.quantity - 1)}
+            >
               –
             </button>
-            <span className="w-8 text-center text-sm tabular-nums">{line.quantity}</span>
-            <button type="button" aria-label={t.increase} className="h-8 w-8 hover:text-orange" onClick={() => update(line.quantity + 1)}>
+            <span className="w-8 text-center text-sm tabular-nums">
+              {line.quantity}
+            </span>
+            <button
+              type="button"
+              aria-label={t.increase}
+              className="h-8 w-8 hover:text-orange"
+              onClick={() => update(line.quantity + 1)}
+            >
               +
             </button>
           </div>
-          <span className="text-sm">{formatPrice(line.amount, line.currencyCode)}</span>
+          <span className="text-sm">
+            {formatPrice(line.amount, line.currencyCode)}
+          </span>
         </div>
         <button
           type="button"

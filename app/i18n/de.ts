@@ -38,12 +38,42 @@ export const de = {
     eyebrow: 'Technologie',
     title: 'Jedes Detail hat eine Aufgabe.',
     hotspots: [
-      {id: 'fabric', label: 'Material', title: '3-Lagen-Hardshell', text: 'Wasserdicht und atmungsaktiv. Wasser perlt ab, Dampf entweicht.'},
-      {id: 'zipper', label: 'YKK® Zipper', title: 'Wetterfeste Reißverschlüsse', text: 'Abgedeckte Zipper mit griffigen Pulls – auch mit Handschuhen.'},
-      {id: 'hood', label: 'Hood-System', title: '3D-Verstellung', text: 'Helmkompatible Kapuze, die mit dem Kopf mitgeht.'},
-      {id: 'vent', label: 'Ventilation', title: 'Unterarm-Zips', text: 'Schnelle Temperaturregulierung beim Aufstieg.'},
-      {id: 'cuffs', label: 'Cuffs', title: 'Verstellbare Bündchen', text: 'Handschuhfreundlich, dicht gegen Schnee.'},
-      {id: 'patch', label: 'Logo-Patch', title: 'Mattes Gummi', text: 'Ton in Ton oder mit Akzent – robust wie die Jacke.'},
+      {
+        id: 'fabric',
+        label: 'Material',
+        title: '3-Lagen-Hardshell',
+        text: 'Wasserdicht und atmungsaktiv. Wasser perlt ab, Dampf entweicht.',
+      },
+      {
+        id: 'zipper',
+        label: 'YKK® Zipper',
+        title: 'Wetterfeste Reißverschlüsse',
+        text: 'Abgedeckte Zipper mit griffigen Pulls – auch mit Handschuhen.',
+      },
+      {
+        id: 'hood',
+        label: 'Hood-System',
+        title: '3D-Verstellung',
+        text: 'Helmkompatible Kapuze, die mit dem Kopf mitgeht.',
+      },
+      {
+        id: 'vent',
+        label: 'Ventilation',
+        title: 'Unterarm-Zips',
+        text: 'Schnelle Temperaturregulierung beim Aufstieg.',
+      },
+      {
+        id: 'cuffs',
+        label: 'Cuffs',
+        title: 'Verstellbare Bündchen',
+        text: 'Handschuhfreundlich, dicht gegen Schnee.',
+      },
+      {
+        id: 'patch',
+        label: 'Logo-Patch',
+        title: 'Mattes Gummi',
+        text: 'Ton in Ton oder mit Akzent – robust wie die Jacke.',
+      },
     ],
   },
   lookbook: {
@@ -82,9 +112,29 @@ export const de = {
   footer: {
     claim: 'Built for Higher Ground',
     columns: [
-      {title: 'Shop', links: [{label: 'Kollektion', to: '/#kollektion'}, {label: 'Technologie', to: '/#technologie'}, {label: 'Lookbook', to: '/#lookbook'}]},
-      {title: 'Social', links: [{label: 'Instagram', to: 'https://instagram.com'}, {label: 'TikTok', to: 'https://tiktok.com'}, {label: 'YouTube', to: 'https://youtube.com'}]},
-      {title: 'Rechtliches', links: [{label: 'Impressum', to: '/impressum'}, {label: 'Datenschutz', to: '/datenschutz'}]},
+      {
+        title: 'Shop',
+        links: [
+          {label: 'Kollektion', to: '/#kollektion'},
+          {label: 'Technologie', to: '/#technologie'},
+          {label: 'Lookbook', to: '/#lookbook'},
+        ],
+      },
+      {
+        title: 'Social',
+        links: [
+          {label: 'Instagram', to: 'https://instagram.com'},
+          {label: 'TikTok', to: 'https://tiktok.com'},
+          {label: 'YouTube', to: 'https://youtube.com'},
+        ],
+      },
+      {
+        title: 'Rechtliches',
+        links: [
+          {label: 'Impressum', to: '/impressum'},
+          {label: 'Datenschutz', to: '/datenschutz'},
+        ],
+      },
     ],
     rights: 'Alle Rechte vorbehalten.',
   },

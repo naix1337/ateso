@@ -10,7 +10,8 @@ export function useT(locale: string = DEFAULT_LOCALE): Dictionary {
 }
 
 export function formatPrice(amount: string | number, currencyCode = 'EUR') {
-  return new Intl.NumberFormat('de-DE', {style: 'currency', currency: currencyCode}).format(
-    Number(amount),
-  );
+  return new Intl.NumberFormat('de-DE', {
+    style: 'currency',
+    currency: currencyCode,
+  }).format(Number(amount));
 }

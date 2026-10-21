@@ -7,7 +7,10 @@ export async function action({request, context}: Route.ActionArgs) {
   const form = await request.formData();
   const change = parseIntent(form);
   if (!change) {
-    return data({error: 'Ungültige Warenkorb-Aktion', cart: null}, {status: 400});
+    return data(
+      {error: 'Ungültige Warenkorb-Aktion', cart: null},
+      {status: 400},
+    );
   }
 
   const {cart, headers} = await updateCart(context, change);
@@ -21,7 +24,9 @@ function parseIntent(form: FormData): CartIntent | null {
 
   if (intent === 'add') {
     const merchandiseId = String(form.get('merchandiseId') ?? '');
-    return merchandiseId ? {intent, merchandiseId, quantity: Math.max(1, quantity)} : null;
+    return merchandiseId
+      ? {intent, merchandiseId, quantity: Math.max(1, quantity)}
+      : null;
   }
   const lineId = String(form.get('lineId') ?? '');
   if (!lineId) return null;

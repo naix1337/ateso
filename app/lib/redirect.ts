@@ -26,8 +26,16 @@ export function redirectIfHandleIsLocalized(
  * Nur relative Pfade derselben Origin zulassen (Schutz vor Open Redirects).
  * Gibt Pfad + Query zurück oder `fallback`.
  */
-export function safeLocalPath(value: unknown, requestUrl: string, fallback = '/') {
-  if (typeof value !== 'string' || !value.startsWith('/') || /[\\\u0000-\u001f]/.test(value)) {
+export function safeLocalPath(
+  value: unknown,
+  requestUrl: string,
+  fallback = '/',
+) {
+  if (
+    typeof value !== 'string' ||
+    !value.startsWith('/') ||
+    /[\\\u0000-\u001f]/.test(value)
+  ) {
     return fallback;
   }
   try {

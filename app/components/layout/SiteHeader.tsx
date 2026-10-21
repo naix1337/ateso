@@ -46,7 +46,12 @@ export function SiteHeader() {
       } ${solid ? 'bg-black/70 backdrop-blur-md' : 'bg-transparent'}`}
     >
       <div className="mx-auto flex h-[var(--header-h)] max-w-[1800px] items-center justify-between px-4 md:px-10">
-        <Link to="/" aria-label={t.home} className="flex items-center gap-3 text-bone" prefetch="intent">
+        <Link
+          to="/"
+          aria-label={t.home}
+          className="flex items-center gap-3 text-bone"
+          prefetch="intent"
+        >
           <Signet className="h-6 w-auto text-orange" />
           <Wordmark className="h-[18px] w-auto" />
         </Link>
