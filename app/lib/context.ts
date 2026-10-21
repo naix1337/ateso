@@ -47,7 +47,9 @@ export async function createHydrogenRouterContext(
 
   // Ohne verbundenen Store (Mock-Modus) braucht der Storefront-Client im
   // Production-Build trotzdem eine Domain – mock.shop wie im Dev-Modus.
-  const storefrontEnv = env.PUBLIC_STORE_DOMAIN ? env : {...env, PUBLIC_STORE_DOMAIN: 'mock.shop'};
+  const storefrontEnv = env.PUBLIC_STORE_DOMAIN
+    ? env
+    : {...env, PUBLIC_STORE_DOMAIN: 'mock.shop'};
 
   const hydrogenContext = createHydrogenContext(
     {

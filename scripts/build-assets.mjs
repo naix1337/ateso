@@ -51,10 +51,6 @@ for (const {src, name, box, width} of crops) {
   await img.clone().avif({quality: 55}).toFile(`${OUT}/${name}.avif`);
   await img.clone().webp({quality: 78}).toFile(`${OUT}/${name}.webp`);
   console.log('✓', name);
-  // Winziges Bild für weiche Hintergründe (Unschärfe durch Hochskalieren, kein CSS-Filter)
-  if (name.startsWith('variant-')) {
-    await sharp(src).extract(box).resize({width: 24}).blur(1.2).webp({quality: 60}).toFile(`${OUT}/${name}-blur.webp`);
-  }
 }
 
 // OG-Image (1200×630) aus dem Logo-Nachbau

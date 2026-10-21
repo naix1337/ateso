@@ -51,7 +51,7 @@ Alternativ Variablen ziehen: `npx shopify hydrogen link` und `npx shopify hydrog
 app/
   components/
     brand/        Signet + Wortmarke (SVG-Nachbau, logo-geometry.ts)
-    home/         Preloader, Manifest, Collection, TechDetails, Lookbook, FeaturedProducts, Newsletter
+    home/         Preloader, Hero, Manifest, Shop + ProductDialog, Lookbook, Newsletter
     layout/       Header, Footer, CartDrawer, Cursor, RouteProgress, LegalPage
     motion/       Lenis-SmoothScroll, reduced motion, magnetische Buttons
   i18n/           de.ts (+ Struktur für en.ts)
@@ -71,7 +71,7 @@ npm run assets
 ```
 
 Schneidet aus den Referenz-Boards in `referenzen/` die Varianten-, Detail- und
-Lookbook-Bilder aus und schreibt AVIF + WebP (+ kleine Blur-Varianten) nach
+Lookbook-Bilder aus und schreibt AVIF + WebP nach
 `public/assets/img/` und erzeugt das OG-Image. Die Ergebnisse sind eingecheckt.
 
 Austausch gegen echte Fotos: gleiche Dateinamen in `public/assets/img/` ablegen

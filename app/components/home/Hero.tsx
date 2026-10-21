@@ -135,7 +135,7 @@ export function Hero({revealed}: {revealed: boolean}) {
           <button
             ref={cta}
             type="button"
-            onClick={() => scrollToTarget(lenis, '#kollektion')}
+            onClick={() => scrollToTarget(lenis, '#shop')}
             className="label rounded-full border border-bone/30 px-8 py-4 text-bone transition-colors hover:border-orange hover:bg-orange hover:text-black"
           >
             {t.cta}

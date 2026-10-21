@@ -9,8 +9,7 @@ export const de = {
       'Technische Hardshells für Alpinisten. Protection · Movement · Purpose. Die Technical Shell Collection von ateso.',
   },
   nav: {
-    collection: 'Kollektion',
-    tech: 'Technologie',
+    shop: 'Shop',
     lookbook: 'Lookbook',
     cart: 'Warenkorb',
     home: 'ateso Startseite',
@@ -19,7 +18,7 @@ export const de = {
   hero: {
     claim: 'Built for Higher Ground',
     eyebrow: 'Alpine Performance',
-    cta: 'Kollektion entdecken',
+    cta: 'Zum Shop',
     scroll: 'Scrollen',
   },
   manifest: {
@@ -27,18 +26,23 @@ export const de = {
     words: ['Protection', 'Movement', 'Purpose'],
     body: 'Wir bauen Ausrüstung für die Momente, in denen es darauf ankommt. Für Grate im Sturm, für den letzten Meter vor dem Gipfel, für alle, die ihre Ausrüstung wirklich brauchen.',
   },
-  collection: {
-    eyebrow: 'Technical Shell Collection',
-    title: 'Zehn Farben. Eine Haltung.',
+  shop: {
+    eyebrow: 'Shop',
+    title: 'Technical Shell Jacket',
+    text: 'Eine Jacke, zehn Farben. 3-Lagen-Hardshell für jede Bedingung.',
     addToCart: 'In den Warenkorb',
     adding: 'Wird hinzugefügt …',
+    added: 'Hinzugefügt',
     soldOut: 'Ausverkauft',
-    variantLabel: 'Farbvariante',
+    details: 'Details ansehen',
+    empty: 'Produkte folgen in Kürze.',
   },
-  tech: {
-    eyebrow: 'Technologie',
-    title: 'Jedes Detail hat eine Aufgabe.',
-    hotspots: [
+  product: {
+    eyebrow: 'Technical Shell Collection',
+    color: 'Farbe',
+    featuresTitle: 'Eigenschaften',
+    close: 'Schließen',
+    features: [
       {
         id: 'fabric',
         label: 'Material',
@@ -82,14 +86,6 @@ export const de = {
     statement: ['Any', 'Condition', 'Further'],
     caption: 'Technical Shell Collection 2025',
   },
-  featured: {
-    eyebrow: 'Ausgewählt',
-    title: 'Bereit für den Aufstieg',
-    quickAdd: 'Schnell hinzufügen',
-    added: 'Hinzugefügt',
-    viewAll: 'Alle Produkte',
-    empty: 'Produkte folgen in Kürze.',
-  },
   newsletter: {
     eyebrow: 'Newsletter',
     title: 'Als Erste am Berg.',
@@ -116,8 +112,7 @@ export const de = {
       {
         title: 'Shop',
         links: [
-          {label: 'Kollektion', to: '/#kollektion'},
-          {label: 'Technologie', to: '/#technologie'},
+          {label: 'Jacken', to: '/#shop'},
           {label: 'Lookbook', to: '/#lookbook'},
         ],
       },

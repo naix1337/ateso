@@ -7,8 +7,7 @@ import {useT} from '~/i18n';
 import {useCartUI, useMiniCart} from './CartContext';
 
 const NAV = [
-  {key: 'collection', hash: '#kollektion'},
-  {key: 'tech', hash: '#technologie'},
+  {key: 'shop', hash: '#shop'},
   {key: 'lookbook', hash: '#lookbook'},
 ] as const;
 

@@ -6,10 +6,8 @@ import {de} from '~/i18n/de';
 import {Preloader} from '~/components/home/Preloader';
 import {Hero} from '~/components/home/Hero';
 import {Manifest} from '~/components/home/Manifest';
-import {Collection} from '~/components/home/Collection';
-import {TechDetails} from '~/components/home/TechDetails';
+import {Shop} from '~/components/home/Shop';
 import {Lookbook} from '~/components/home/Lookbook';
-import {FeaturedProducts} from '~/components/home/FeaturedProducts';
 import {Newsletter} from '~/components/home/Newsletter';
 
 const SITE_URL = 'https://ateso.store';
@@ -72,7 +70,7 @@ export async function loader({context}: Route.LoaderArgs) {
 }
 
 export default function Homepage() {
-  const {collection, featured} = useLoaderData<typeof loader>();
+  const {collection} = useLoaderData<typeof loader>();
   const [revealed, setRevealed] = useState(false);
   const onReveal = useCallback(() => setRevealed(true), []);
 
@@ -81,10 +79,8 @@ export default function Homepage() {
       <Preloader ready onReveal={onReveal} />
       <Hero revealed={revealed} />
       <Manifest />
-      <Collection collection={collection} />
-      <TechDetails />
+      <Shop collection={collection} />
       <Lookbook />
-      <FeaturedProducts products={featured} />
       <Newsletter />
     </>
   );

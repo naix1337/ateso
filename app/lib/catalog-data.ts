@@ -23,18 +23,6 @@ export type CollectionData = {
   variants: CollectionVariant[];
 };
 
-export type ProductCard = {
-  key: string;
-  handle: string;
-  title: string;
-  subtitle: string;
-  price: Money;
-  image: string | null;
-  hoverImage: string | null;
-  merchandiseId: string | null;
-  available: boolean;
-};
-
 const img = (name: string) => `/assets/img/${name}`;
 
 /** Gestaltungsdaten je Variante – gelten im Mock- und im Live-Modus. */
