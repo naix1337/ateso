@@ -11,7 +11,8 @@
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "react-router typegen && tsc --noEmit",
     "codegen": "shopify hydrogen codegen && react-router typegen",
-    "assets": "node scripts/build-assets.mjs"
+    "assets": "node scripts/build-assets.mjs",
+    "start:node": "node --env-file-if-exists=.env server/node-server.mjs"
   },
   "prettier": "@shopify/prettier-config",
   "dependencies": {

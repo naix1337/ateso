@@ -33,7 +33,9 @@ export function safeLocalPath(value: unknown, requestUrl: string, fallback = '/'
   try {
     const origin = new URL(requestUrl).origin;
     const target = new URL(value, origin);
-    return target.origin === origin ? `${target.pathname}${target.search}` : fallback;
+    if (target.origin !== origin) return fallback;
+    // Normalisierung kann z. B. aus „/.//evil.com“ „//evil.com“ machen → führende Slashes zusammenfassen
+    return `${target.pathname.replace(/^[/\\]+/, '/')}${target.search}`;
   } catch {
     return fallback;
   }
