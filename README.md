@@ -1,7 +1,7 @@
 # ateso – Storefront (Shopify Hydrogen)
 
-Homepage der Alpine-Performance-Marke **ateso** mit scroll-gesteuerter 3D-Sequenz
-(„Das Logo kommt aus dem Gletscher“). Shop-ready über die Shopify Storefront API,
+Homepage der Alpine-Performance-Marke **ateso** mit scroll-gesteuerten Animationen.
+Shop-ready über die Shopify Storefront API,
 läuft lokal komplett mit Testdaten.
 
 - Brief: [`ateso-claude-code-prompt.md`](./ateso-claude-code-prompt.md)
@@ -9,8 +9,7 @@ läuft lokal komplett mit Testdaten.
 
 ## Stack
 
-Hydrogen (React Router 7) · TypeScript · Tailwind CSS v4 · React Three Fiber + drei +
-postprocessing · GSAP ScrollTrigger · Lenis · motion · detect-gpu
+Hydrogen (React Router 7) · TypeScript · Tailwind CSS v4 · GSAP ScrollTrigger · Lenis · motion
 
 ## Schnellstart (lokal, Testdaten)
 
@@ -21,14 +20,6 @@ npm install
 cp .env.example .env        # USE_MOCK_STOREFRONT="true" ist voreingestellt
 npm run dev                 # http://localhost:3000 (oder nächster freier Port)
 ```
-
-Nützliche Parameter zum Testen des Heros:
-
-| URL | Wirkung |
-|---|---|
-| `/?hero=webgl` | Echtzeit-3D erzwingen |
-| `/?hero=fallback` | 2.5D-Fallback (Standard auf Mobil/schwacher GPU) |
-| `/?hero=static` | Endbild ohne Animation (wie `prefers-reduced-motion`) |
 
 ## Mock-Modus vs. echter Store
 
@@ -61,7 +52,6 @@ app/
   components/
     brand/        Signet + Wortmarke (SVG-Nachbau, logo-geometry.ts)
     home/         Preloader, Manifest, Collection, TechDetails, Lookbook, FeaturedProducts, Newsletter
-    home/hero/    Hero (Moduswahl), GlacierScene (R3F), HeroFallback (2.5D), math.ts
     layout/       Header, Footer, CartDrawer, Cursor, RouteProgress, LegalPage
     motion/       Lenis-SmoothScroll, reduced motion, magnetische Buttons
   i18n/           de.ts (+ Struktur für en.ts)
@@ -82,19 +72,16 @@ npm run assets
 
 Schneidet aus den Referenz-Boards in `referenzen/` die Varianten-, Detail- und
 Lookbook-Bilder aus und schreibt AVIF + WebP (+ kleine Blur-Varianten) nach
-`public/assets/img/`, erzeugt das OG-Image und kopiert die detect-gpu-Benchmarks nach
-`public/assets/gpu/` (kein CDN-Request). Die Ergebnisse sind eingecheckt.
+`public/assets/img/` und erzeugt das OG-Image. Die Ergebnisse sind eingecheckt.
 
 Austausch gegen echte Fotos: gleiche Dateinamen in `public/assets/img/` ablegen
 (`variant-<name>.avif/.webp`, `detail-<id>.avif/.webp`), Crop-Liste im Skript anpassen.
 
 Logo: `app/components/brand/logo-geometry.ts` ist ein **Nachbau** nach dem Logo-Board.
 Sobald Original-Vektoren vorliegen, die Pfade dort ersetzen – Header, Preloader,
-3D-Signet und OG-Image ziehen automatisch nach.
+Footer und OG-Image ziehen automatisch nach.
 
-Video-Slots: `Lookbook` akzeptiert ein `video`-Prop (WebM + MP4 + Poster). Ein
-Hero-Video (Higgsfield) kann in `HeroFallback` als unterste Ebene gescrubbt werden.
-
+Video-Slot: `Lookbook` akzeptiert ein `video`-Prop (WebM + MP4 + Poster).
 ## Deployment
 
 ### Shopify Oxygen (primär)
@@ -127,26 +114,15 @@ liefert `dist/client` statisch (mit Brotli/Gzip) aus. Unterschiede zu Oxygen:
 
 ## Qualität
 
-Gemessen mit Lighthouse 12 lokal gegen den Node-Server (Production-Build, Mock-Modus):
-
-| | Performance | Accessibility | Best Practices | SEO |
-|---|---|---|---|---|
-| Mobil (2.5D-Hero) | 83–90 (Median 89) | 100 | 100 | 100 |
-| Desktop (WebGL-Hero) | 69–70 | 100 | 100 | 100 |
-
-Je drei Läufe. CLS 0 bzw. 0,011. Auf Desktop kostet der Aufbau der WebGL-Szene
-(Gelände, erster Render inkl. Postprocessing) noch ca. 2,5 s Blocking Time im
-Headless-Chrome; auf echter GPU deutlich weniger, aber nicht gemessen.
-
-- `prefers-reduced-motion`: kein Lenis, kein Pinning, kein Cursor, statischer Hero
-- 3D nur per dynamic import, GPU-Tier-Erkennung, adaptive DPR, Rendering pausiert außerhalb des Heros
-- Shader werden asynchron kompiliert (`compileAsync`), bevor der erste Frame rendert
+- `prefers-reduced-motion`: kein Lenis, keine Scroll-Animationen, kein Cursor
+- Sections unterhalb des Folds initialisieren ihre Animationen in Idle-Zeit
+- Lighthouse-Werte nach Entfernen des Gletscher-Heros noch nicht neu gemessen
 
 ## Offene Punkte
 
 - Original-Logo-Vektoren statt Nachbau
 - Höher aufgelöste Produktfotos (aktuell Ausschnitte der Referenz-Boards, ca. 260 px breit)
-- Hero-Video (Higgsfield) für den Mobil-Pfad, Lookbook-Film
+- Neuer Einstieg/Hero (der Gletscher-Hero wurde entfernt), Lookbook-Film
 - Newsletter-Anbindung (Shopify Customer Marketing oder Klaviyo)
 - Impressum/Datenschutz mit geprüften Texten
 - EN-Übersetzung (`app/i18n/en.ts`) und Locale-Routing

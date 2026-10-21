@@ -2,7 +2,7 @@ import {useMemo, useRef} from 'react';
 import {gsap, useGsap} from '~/lib/gsap';
 import {prefersReducedMotion} from '~/components/motion/useReducedMotion';
 import {useT} from '~/i18n';
-import {fbm, ridged} from './hero/math';
+import {fbm, ridged} from './math';
 
 function mountainPath(
   seed: number,
@@ -61,16 +61,21 @@ export function Manifest() {
       });
 
       gsap.utils.toArray<SVGElement>('[data-mountain]').forEach((layer) => {
-        gsap.to(layer, {
-          yPercent: Number(layer.dataset.speed),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: root.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
+        // Ebenen steigen von unten auf, damit nie ihre Unterkante sichtbar wird
+        gsap.fromTo(
+          layer,
+          {yPercent: -Number(layer.dataset.speed)},
+          {
+            yPercent: 0,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: root.current,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+            },
           },
-        });
+        );
       });
 
       gsap.from('[data-manifest-body]', {

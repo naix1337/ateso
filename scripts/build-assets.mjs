@@ -57,11 +57,6 @@ for (const {src, name, box, width} of crops) {
   }
 }
 
-// GPU-Benchmarks für detect-gpu lokal ausliefern (kein CDN-Request)
-import {cp} from 'node:fs/promises';
-await cp('node_modules/detect-gpu/dist/benchmarks', 'public/assets/gpu', {recursive: true});
-console.log('✓ gpu benchmarks');
-
 // OG-Image (1200×630) aus dem Logo-Nachbau
 const logo = await import('../app/components/brand/logo-geometry.ts');
 const wordmark = logo.WORDMARK_LETTERS.flatMap((l) => l.paths)

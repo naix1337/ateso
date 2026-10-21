@@ -14,7 +14,7 @@ const MAX_WAIT = 3000;
 
 /**
  * Signet zeichnet sich als Linie, füllt sich orange, Fortschritt in %.
- * Endet, sobald der Hero bereit ist (spätestens nach 3 s), und gibt den Scroll frei.
+ * Endet, sobald `ready` gesetzt ist (spätestens nach 3 s), und gibt den Scroll frei.
  */
 export function Preloader({ready}: {ready: boolean}) {
   const t = useT().preloader;
