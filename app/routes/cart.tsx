@@ -3,6 +3,7 @@ import type {Route} from './+types/cart';
 import type {CartQueryDataReturn} from '@shopify/hydrogen';
 import {CartForm} from '@shopify/hydrogen';
 import {CartMain} from '~/components/CartMain';
+import {safeLocalPath} from '~/lib/redirect';
 
 export const meta: Route.MetaFunction = () => {
   return [{title: `Hydrogen | Cart`}];
@@ -79,8 +80,10 @@ export async function action({request, context}: Route.ActionArgs) {
 
   const redirectTo = formData.get('redirectTo') ?? null;
   if (typeof redirectTo === 'string') {
+    // Nur Pfade derselben Origin (Schutz vor Open Redirects)
+    const location = safeLocalPath(redirectTo, request.url);
     status = 303;
-    headers.set('Location', redirectTo);
+    headers.set('Location', location);
   }
 
   return data(
