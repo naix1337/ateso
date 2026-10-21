@@ -1,0 +1,24 @@
+# Dependencies & builds
+node_modules/
+dist/
+build/
+.cache/
+.react-router/
+.shopify/
+.mf/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Assets: Rohdateien nicht ins Repo (siehe assets/README.md)
+assets-raw/
+*.blend
+*.psd
+
+# Tools / OS
+.remember/
+.DS_Store
+Thumbs.db
+*.log
