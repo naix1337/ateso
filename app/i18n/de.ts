@@ -19,6 +19,7 @@ export const de = {
   hero: {
     claim: 'Built for Higher Ground',
     eyebrow: 'Alpine Performance',
+    cta: 'Kollektion entdecken',
     scroll: 'Scrollen',
   },
   manifest: {

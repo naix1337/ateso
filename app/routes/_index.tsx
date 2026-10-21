@@ -1,8 +1,10 @@
+import {useCallback, useState} from 'react';
 import {useLoaderData} from 'react-router';
 import type {Route} from './+types/_index';
 import {getHomeCatalog} from '~/lib/catalog';
 import {de} from '~/i18n/de';
 import {Preloader} from '~/components/home/Preloader';
+import {Hero} from '~/components/home/Hero';
 import {Manifest} from '~/components/home/Manifest';
 import {Collection} from '~/components/home/Collection';
 import {TechDetails} from '~/components/home/TechDetails';
@@ -71,11 +73,13 @@ export async function loader({context}: Route.LoaderArgs) {
 
 export default function Homepage() {
   const {collection, featured} = useLoaderData<typeof loader>();
+  const [revealed, setRevealed] = useState(false);
+  const onReveal = useCallback(() => setRevealed(true), []);
 
   return (
     <>
-      <h1 className="sr-only">ateso – {de.hero.claim}</h1>
-      <Preloader ready />
+      <Preloader ready onReveal={onReveal} />
+      <Hero revealed={revealed} />
       <Manifest />
       <Collection collection={collection} />
       <TechDetails />

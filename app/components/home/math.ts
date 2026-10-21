@@ -73,3 +73,21 @@ export function ridged(x: number, y: number, octaves = 5) {
   }
   return sum;
 }
+
+/** Bergsilhouette als SVG-Pfad im viewBox 0 0 200 120. */
+export function mountainPath(
+  seed: number,
+  base: number,
+  amplitude: number,
+  roughness: number,
+) {
+  const pts: string[] = [];
+  for (let x = 0; x <= 200; x += 2) {
+    const y =
+      base -
+      ridged(x * roughness + seed, seed * 1.7) * amplitude -
+      fbm(x * 0.05, seed) * amplitude * 0.3;
+    pts.push(`${x},${y.toFixed(1)}`);
+  }
+  return `M0,120 L${pts.join(' L')} L200,120 Z`;
+}

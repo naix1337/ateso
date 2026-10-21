@@ -16,7 +16,14 @@ const MAX_WAIT = 3000;
  * Signet zeichnet sich als Linie, füllt sich orange, Fortschritt in %.
  * Endet, sobald `ready` gesetzt ist (spätestens nach 3 s), und gibt den Scroll frei.
  */
-export function Preloader({ready}: {ready: boolean}) {
+/** `onReveal` feuert, sobald der Vorhang aufgeht (Einstieg kann einblenden). */
+export function Preloader({
+  ready,
+  onReveal,
+}: {
+  ready: boolean;
+  onReveal?: () => void;
+}) {
   const t = useT().preloader;
   const root = useRef<HTMLDivElement>(null);
   const counter = useRef<HTMLSpanElement>(null);
@@ -26,6 +33,8 @@ export function Preloader({ready}: {ready: boolean}) {
   const intro = useRef<gsap.core.Timeline | null>(null);
   const value = useRef({v: 0});
   const exiting = useRef(false);
+  const revealRef = useRef(onReveal);
+  revealRef.current = onReveal;
 
   // Scroll sperren, solange der Preloader steht
   useEffect(() => {
@@ -101,6 +110,7 @@ export function Preloader({ready}: {ready: boolean}) {
       });
       if (reduced) {
         exit.to(root.current, {opacity: 0, duration: 0.3});
+        revealRef.current?.();
         return;
       }
       exit
@@ -123,7 +133,9 @@ export function Preloader({ready}: {ready: boolean}) {
           root.current,
           {clipPath: 'inset(0% 0% 100% 0%)', duration: 0.9, ease: 'expo.inOut'},
           0.75,
-        );
+        )
+        // Einstieg einblenden, während der Vorhang hochfährt
+        .call(() => revealRef.current?.(), [], 0.95);
     }, root);
     // kein revert: der Preloader wird nach dem Exit ausgehängt
     void ctx;

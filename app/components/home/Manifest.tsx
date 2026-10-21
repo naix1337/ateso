@@ -2,24 +2,7 @@ import {useMemo, useRef} from 'react';
 import {gsap, useGsap} from '~/lib/gsap';
 import {prefersReducedMotion} from '~/components/motion/useReducedMotion';
 import {useT} from '~/i18n';
-import {fbm, ridged} from './math';
-
-function mountainPath(
-  seed: number,
-  base: number,
-  amplitude: number,
-  roughness: number,
-) {
-  const pts: string[] = [];
-  for (let x = 0; x <= 200; x += 2) {
-    const y =
-      base -
-      ridged(x * roughness + seed, seed * 1.7) * amplitude -
-      fbm(x * 0.05, seed) * amplitude * 0.3;
-    pts.push(`${x},${y.toFixed(1)}`);
-  }
-  return `M0,120 L${pts.join(' L')} L200,120 Z`;
-}
+import {mountainPath} from './math';
 
 /** „Protection · Movement · Purpose“ mit Split-Text-Reveals vor parallaxen Bergebenen. */
 export function Manifest() {
