@@ -1,45 +1,153 @@
-# Hydrogen template: Skeleton
+# ateso – Storefront (Shopify Hydrogen)
 
-Hydrogen is Shopify’s stack for headless commerce. Hydrogen is designed to dovetail with [React Router](https://reactrouter.com/), the modern multi-strategy router for React. This template contains a **minimal setup** of components, queries and tooling to get started with Hydrogen.
+Homepage der Alpine-Performance-Marke **ateso** mit scroll-gesteuerter 3D-Sequenz
+(„Das Logo kommt aus dem Gletscher“). Shop-ready über die Shopify Storefront API,
+läuft lokal komplett mit Testdaten.
 
-[Check out Hydrogen docs](https://shopify.dev/custom-storefronts/hydrogen)
-[Get familiar with React Router](https://reactrouter.com/start/framework/routing)
+- Brief: [`ateso-claude-code-prompt.md`](./ateso-claude-code-prompt.md)
+- Design & Plan: [`docs/superpowers/specs/2026-10-21-ateso-homepage-design.md`](./docs/superpowers/specs/2026-10-21-ateso-homepage-design.md)
 
-## What's included
+## Stack
 
-- React Router
-- Hydrogen
-- Oxygen
-- Vite
-- Shopify CLI
-- ESLint
-- Prettier
-- GraphQL generator
-- TypeScript and JavaScript flavors
-- Minimal setup of components and routes
+Hydrogen (React Router 7) · TypeScript · Tailwind CSS v4 · React Three Fiber + drei +
+postprocessing · GSAP ScrollTrigger · Lenis · motion · detect-gpu
 
-## Getting started
+## Schnellstart (lokal, Testdaten)
 
-**Requirements:**
-
-- Node.js version 22.x or 24.x
+Voraussetzung: Node 22 oder 24.
 
 ```bash
-npm create @shopify/hydrogen@latest
+npm install
+cp .env.example .env        # USE_MOCK_STOREFRONT="true" ist voreingestellt
+npm run dev                 # http://localhost:3000 (oder nächster freier Port)
 ```
 
-## Building for production
+Nützliche Parameter zum Testen des Heros:
+
+| URL | Wirkung |
+|---|---|
+| `/?hero=webgl` | Echtzeit-3D erzwingen |
+| `/?hero=fallback` | 2.5D-Fallback (Standard auf Mobil/schwacher GPU) |
+| `/?hero=static` | Endbild ohne Animation (wie `prefers-reduced-motion`) |
+
+## Mock-Modus vs. echter Store
+
+`USE_MOCK_STOREFRONT="true"` (oder kein `PUBLIC_STOREFRONT_API_TOKEN`) →
+Startseite und Warenkorb nutzen `app/lib/mock/catalog.ts` (1 Jacke × 10 Farben,
+Preise/IDs erfunden). Der Warenkorb liegt in der Session; Checkout ist deaktiviert.
+
+Für den echten Store in `.env`:
 
 ```bash
-npm run build
+USE_MOCK_STOREFRONT="false"
+PUBLIC_STORE_DOMAIN="xxx.myshopify.com"   # nicht ateso.store
+PUBLIC_STOREFRONT_API_TOKEN="…"
+PUBLIC_STOREFRONT_ID="…"
+PRIVATE_STOREFRONT_API_TOKEN="…"
+PUBLIC_CHECKOUT_DOMAIN="…"
 ```
 
-## Local development
+Erwartet wird ein Produkt mit Handle `technical-shell-jacket`, dessen Varianten eine
+Option mit den Werten `Aurora`, `Summit`, … `Signal` haben (siehe `VARIANT_META` in
+`app/lib/catalog-data.ts`). Fehlende Varianten werden angezeigt, sind aber nicht kaufbar.
+Checkout läuft immer über Shopify.
+
+Alternativ Variablen ziehen: `npx shopify hydrogen link` und `npx shopify hydrogen env pull`.
+
+## Struktur
+
+```
+app/
+  components/
+    brand/        Signet + Wortmarke (SVG-Nachbau, logo-geometry.ts)
+    home/         Preloader, Manifest, Collection, TechDetails, Lookbook, FeaturedProducts, Newsletter
+    home/hero/    Hero (Moduswahl), GlacierScene (R3F), HeroFallback (2.5D), math.ts
+    layout/       Header, Footer, CartDrawer, Cursor, RouteProgress, LegalPage
+    motion/       Lenis-SmoothScroll, reduced motion, magnetische Buttons
+  i18n/           de.ts (+ Struktur für en.ts)
+  lib/            catalog (Mock/Live), cart.server, gsap-Helfer, redirect-Schutz
+  routes/         _index, api.cart, impressum, datenschutz (+ Hydrogen-Skeleton-Routen)
+scripts/build-assets.mjs   Asset-Pipeline
+server/node-server.mjs     Node-Server für Self-Hosting
+```
+
+Die übrigen Routen (`products`, `collections`, `cart`, `account`, …) stammen aus dem
+Hydrogen-Skeleton und sind die Basis für die späteren Shop-Seiten.
+
+## Asset-Pipeline
 
 ```bash
-npm run dev
+npm run assets
 ```
 
-## Setup for using Customer Account API (`/account` section)
+Schneidet aus den Referenz-Boards in `referenzen/` die Varianten-, Detail- und
+Lookbook-Bilder aus und schreibt AVIF + WebP (+ kleine Blur-Varianten) nach
+`public/assets/img/`, erzeugt das OG-Image und kopiert die detect-gpu-Benchmarks nach
+`public/assets/gpu/` (kein CDN-Request). Die Ergebnisse sind eingecheckt.
 
-Follow step 1 and 2 of <https://shopify.dev/docs/custom-storefronts/building-with-the-customer-account-api/hydrogen#step-1-set-up-a-public-domain-for-local-development>
+Austausch gegen echte Fotos: gleiche Dateinamen in `public/assets/img/` ablegen
+(`variant-<name>.avif/.webp`, `detail-<id>.avif/.webp`), Crop-Liste im Skript anpassen.
+
+Logo: `app/components/brand/logo-geometry.ts` ist ein **Nachbau** nach dem Logo-Board.
+Sobald Original-Vektoren vorliegen, die Pfade dort ersetzen – Header, Preloader,
+3D-Signet und OG-Image ziehen automatisch nach.
+
+Video-Slots: `Lookbook` akzeptiert ein `video`-Prop (WebM + MP4 + Poster). Ein
+Hero-Video (Higgsfield) kann in `HeroFallback` als unterste Ebene gescrubbt werden.
+
+## Deployment
+
+### Shopify Oxygen (primär)
+
+```bash
+npx shopify hydrogen link     # einmalig mit dem Store verbinden
+npx shopify hydrogen deploy
+```
+
+Env-Variablen im Shopify-Admin (Hydrogen → Storefront → Environment) setzen.
+
+### Docker / Node (Self-Hosting)
+
+```bash
+SESSION_SECRET="…" docker compose up --build    # http://localhost:3000
+```
+
+Ohne Docker: `npm run build && npm run start:node`.
+
+Der Node-Server (`server/node-server.mjs`) führt den Worker-Build unter Node aus,
+liefert `dist/client` statisch (mit Brotli/Gzip) aus. Unterschiede zu Oxygen:
+
+- kein Edge-Cache (`caches` ist ein No-op) – Storefront-Antworten werden nicht gecacht
+- `waitUntil`-Arbeit ohne Shutdown-Garantie
+- keine Oxygen-Header (z. B. Buyer-IP für Analytics)
+- `PUBLIC_ORIGIN=https://ateso.store` setzen; `TRUST_PROXY=true` nur hinter eigenem Proxy
+
+> Das Docker-Image wurde in der Entwicklungsumgebung nicht gebaut (Docker war nicht
+> installiert). Der Node-Server selbst ist mit dem Production-Build getestet.
+
+## Qualität
+
+Gemessen mit Lighthouse 12 lokal gegen den Node-Server (Production-Build, Mock-Modus):
+
+| | Performance | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|
+| Mobil (2.5D-Hero) | 83–90 (Median 89) | 100 | 100 | 100 |
+| Desktop (WebGL-Hero) | 69–70 | 100 | 100 | 100 |
+
+Je drei Läufe. CLS 0 bzw. 0,011. Auf Desktop kostet der Aufbau der WebGL-Szene
+(Gelände, erster Render inkl. Postprocessing) noch ca. 2,5 s Blocking Time im
+Headless-Chrome; auf echter GPU deutlich weniger, aber nicht gemessen.
+
+- `prefers-reduced-motion`: kein Lenis, kein Pinning, kein Cursor, statischer Hero
+- 3D nur per dynamic import, GPU-Tier-Erkennung, adaptive DPR, Rendering pausiert außerhalb des Heros
+- Shader werden asynchron kompiliert (`compileAsync`), bevor der erste Frame rendert
+
+## Offene Punkte
+
+- Original-Logo-Vektoren statt Nachbau
+- Höher aufgelöste Produktfotos (aktuell Ausschnitte der Referenz-Boards, ca. 260 px breit)
+- Hero-Video (Higgsfield) für den Mobil-Pfad, Lookbook-Film
+- Newsletter-Anbindung (Shopify Customer Marketing oder Klaviyo)
+- Impressum/Datenschutz mit geprüften Texten
+- EN-Übersetzung (`app/i18n/en.ts`) und Locale-Routing
+- Shop-Seiten im ateso-Design (PDP, PLP, Cart-Page)

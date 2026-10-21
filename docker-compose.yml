@@ -1,0 +1,20 @@
+services:
+  storefront:
+    build: .
+    image: ateso-storefront:latest
+    ports:
+      - '3000:3000'
+    environment:
+      # Testdaten, solange kein Store verbunden ist
+      USE_MOCK_STOREFRONT: ${USE_MOCK_STOREFRONT:-true}
+      SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET muss gesetzt sein}
+      # Öffentliche Adresse, z. B. https://ateso.store (ignoriert Host-Header)
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-}
+      # nur hinter eigenem Reverse Proxy auf "true" setzen
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      PUBLIC_STORE_DOMAIN: ${PUBLIC_STORE_DOMAIN:-}
+      PUBLIC_STOREFRONT_API_TOKEN: ${PUBLIC_STOREFRONT_API_TOKEN:-}
+      PUBLIC_STOREFRONT_ID: ${PUBLIC_STOREFRONT_ID:-}
+      PRIVATE_STOREFRONT_API_TOKEN: ${PRIVATE_STOREFRONT_API_TOKEN:-}
+      PUBLIC_CHECKOUT_DOMAIN: ${PUBLIC_CHECKOUT_DOMAIN:-}
+    restart: unless-stopped
