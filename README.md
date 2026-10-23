@@ -51,7 +51,7 @@ Alternativ Variablen ziehen: `npx shopify hydrogen link` und `npx shopify hydrog
 app/
   components/
     brand/        Signet + Wortmarke (SVG-Nachbau, logo-geometry.ts)
-    home/         Preloader, Hero, Manifest, Shop + ProductDialog, Lookbook, Newsletter
+    home/         Preloader, Hero, Manifest, Shop + ProductDialog, Newsletter
     layout/       Header, Footer, CartDrawer, Cursor, RouteProgress, LegalPage
     motion/       Lenis-SmoothScroll, reduced motion, magnetische Buttons
   i18n/           de.ts (+ Struktur für en.ts)
@@ -81,7 +81,7 @@ Logo: `app/components/brand/logo-geometry.ts` ist ein **Nachbau** nach dem Logo-
 Sobald Original-Vektoren vorliegen, die Pfade dort ersetzen – Header, Preloader,
 Footer und OG-Image ziehen automatisch nach.
 
-Video-Slot: `Lookbook` akzeptiert ein `video`-Prop (WebM + MP4 + Poster).
+Drop-Seite: `/drop` zählt bis `DROP_DATE` in `app/lib/drop.ts` herunter (ohne Header/Footer).
 ## Deployment
 
 ### Shopify Oxygen (primär)
@@ -127,3 +127,4 @@ liefert `dist/client` statisch (mit Brotli/Gzip) aus. Unterschiede zu Oxygen:
 - Impressum/Datenschutz mit geprüften Texten
 - EN-Übersetzung (`app/i18n/en.ts`) und Locale-Routing
 - Shop-Seiten im ateso-Design (PDP, PLP, Cart-Page)
+"# ateso" 
